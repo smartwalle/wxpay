@@ -45,10 +45,12 @@ func (this *WXPay) doRequest(method, url string, param map[string]interface{}, r
 	req.Header.Set("Content-Type", "application/xml;charset=utf-8")
 
 	resp, err := this.Client.Do(req)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
