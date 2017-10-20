@@ -29,7 +29,7 @@ func (this *WXPay) doRequest(method, url string, param map[string]interface{}, r
 	param["mch_id"] = this.mchId
 	param["nonce_str"] = getNonceStr()
 	if _, ok := param["notify_url"]; ok == false {
-		if len(this.NotifyURL) {
+		if len(this.NotifyURL) > 0 {
 			param["notify_url"] = this.NotifyURL
 		}
 	}
