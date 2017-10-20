@@ -7,24 +7,27 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"math/rand"
+	"bytes"
 )
 
 type Param interface {
 	Params() map[string]interface{}
 }
 
-func mapToXML(m map[string]interface{}) (xml string) {
-	xml = "<xml>"
-	for k, v := range m {
-		var value = fmt.Sprintf("%v", v)
-		if k == "total_fee" || k == "refund_fee" || k == "execute_time_" {
-			xml += "<" + k + ">" + value + "</" + k + ">"
+func mapToXML(m map[string]interface{}) (string) {
+	var xmlBuffer = &bytes.Buffer{}
+	xmlBuffer.WriteString("<xml>")
+
+	for key, value := range m {
+		var value = fmt.Sprintf("%v", value)
+		if key == "total_fee" || key == "refund_fee" || key == "execute_time_" {
+			xmlBuffer.WriteString("<" + key + ">" + value + "</" + key + ">")
 		} else {
-			xml += "<" + k + "><![CDATA[" + value + "]]></" + k + ">"
+			xmlBuffer.WriteString("<" + key + "><![CDATA[" + value + "]]></" + key + ">")
 		}
 	}
-	xml += "</xml>"
-	return xml
+	xmlBuffer.WriteString("</xml>")
+	return xmlBuffer.String()
 }
 
 func signMD5(param map[string]interface{}, apiKey string) (sign string) {
@@ -55,7 +58,7 @@ func signMD5(param map[string]interface{}, apiKey string) (sign string) {
 }
 
 func getNonceStr() (nonceStr string) {
-	chars := "ABCDEFGIHJKLMNOPQRSTUVWXYZ0123456789"
+	chars := "abcdefghijklmnopqrstuvwxyz0123456789"
 	for i := 0; i < 32; i++ {
 		idx := rand.Intn(len(chars) - 1)
 		nonceStr += chars[idx : idx+1]
