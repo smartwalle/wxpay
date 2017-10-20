@@ -23,17 +23,15 @@ func New(appId, apiKey, mchId string) (client *WXPay) {
 	return client
 }
 
-func (this *WXPay)doRequest(method, url string, param Param, results interface{}) (err error) {
-	var m = param.Params()
+func (this *WXPay)doRequest(method, url string, param map[string]interface{}, results interface{}) (err error) {
+	param["appid"] = this.appId
+	param["mch_id"] = this.mchId
+	param["nonce_str"] = getNonceStr()
 
-	m["appid"] = this.appId
-	m["mch_id"] = this.mchId
-	m["nonce_str"] = getNonceStr()
+	var sign = signMD5(param, this.apiKey)
+	param["sign"] = sign
 
-	var sign = signMD5(m, this.apiKey)
-	m["sign"] = sign
-
-	req, err := http.NewRequest(method, url, strings.NewReader(mapToXML(m)))
+	req, err := http.NewRequest(method, url, strings.NewReader(mapToXML(param)))
 	if err != nil {
 		return err
 	}
@@ -54,4 +52,8 @@ func (this *WXPay)doRequest(method, url string, param Param, results interface{}
 	err = xml.Unmarshal(data, results)
 
 	return err
+}
+
+func (this *WXPay)DoRequest(method, url string, param map[string]interface{}, results interface{}) (err error) {
+	return this.doRequest(method, url, param, results)
 }
