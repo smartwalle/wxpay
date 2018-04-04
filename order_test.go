@@ -1,8 +1,8 @@
 package wxpay
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestWXPay_UnifiedOrder(t *testing.T) {

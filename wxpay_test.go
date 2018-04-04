@@ -1,8 +1,8 @@
 package wxpay
 
 import (
-	"testing"
 	"os"
+	"testing"
 )
 
 var client *WXPay
