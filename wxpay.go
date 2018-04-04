@@ -24,20 +24,21 @@ func New(appId, apiKey, mchId string) (client *WXPay) {
 	return client
 }
 
-func (this *WXPay) doRequest(method, url string, param map[string]interface{}, results interface{}) (err error) {
-	param["appid"] = this.appId
-	param["mch_id"] = this.mchId
-	param["nonce_str"] = getNonceStr()
-	if _, ok := param["notify_url"]; ok == false {
+func (this *WXPay) doRequest(method, url string, param WXPayParam, results interface{}) (err error) {
+	var p = param.Params()
+	p["appid"] = this.appId
+	p["mch_id"] = this.mchId
+	p["nonce_str"] = getNonceStr()
+	if _, ok := p["notify_url"]; ok == false {
 		if len(this.NotifyURL) > 0 {
-			param["notify_url"] = this.NotifyURL
+			p["notify_url"] = this.NotifyURL
 		}
 	}
 
-	var sign = signMD5(param, this.apiKey)
-	param["sign"] = sign
+	var sign = signMD5(p, this.apiKey)
+	p["sign"] = sign
 
-	req, err := http.NewRequest(method, url, strings.NewReader(mapToXML(param)))
+	req, err := http.NewRequest(method, url, strings.NewReader(mapToXML(p)))
 	if err != nil {
 		return err
 	}
@@ -62,6 +63,6 @@ func (this *WXPay) doRequest(method, url string, param map[string]interface{}, r
 	return err
 }
 
-func (this *WXPay) DoRequest(method, url string, param map[string]interface{}, results interface{}) (err error) {
+func (this *WXPay) DoRequest(method, url string, param WXPayParam, results interface{}) (err error) {
 	return this.doRequest(method, url, param, results)
 }

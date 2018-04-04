@@ -11,7 +11,7 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	p.Body = "test product"
 	p.NotifyURL = "http://www.test.com"
 	p.TradeType = K_TRADE_TYPE_APP
-	p.SpbillCreateIP = "220.112.233.229"
+	p.SpbillCreateIP = "202.105.107.18"
 	p.TotalFee = 10
 	p.OutTradeNo = "test-1111"
 
