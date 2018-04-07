@@ -62,12 +62,9 @@ func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, er
 }
 
 func (this *WXPay) doRequest(method, url string, param WXPayParam, results interface{}) (err error) {
-	var key = this.apiKey
-	if this.isProduction == false {
-		key, err = this.getSignKey()
-		if err != nil {
-			return err
-		}
+	key, err := this.getKey()
+	if err != nil {
+		return err
 	}
 
 	p, err := this.URLValues(param, key)
@@ -108,12 +105,24 @@ func (this *WXPay) DoRequest(method, url string, param WXPayParam, results inter
 	return this.doRequest(method, url, param, results)
 }
 
-func (this *WXPay) getSignKey() (key string, err error) {
+func (this *WXPay) getKey() (key string, err error) {
+	if this.isProduction == false {
+		key, err = this.getSignKey(this.apiKey)
+		if err != nil {
+			return "", err
+		}
+	} else {
+		key = this.apiKey
+	}
+	return key, err
+}
+
+func (this *WXPay) getSignKey(apiKey string) (key string, err error) {
 	var p = make(url.Values)
 	p.Set("mch_id", this.mchId)
 	p.Set("nonce_str", getNonceStr())
 
-	var sign = signMD5(p, this.apiKey)
+	var sign = signMD5(p, apiKey)
 	p.Set("sign", sign)
 
 	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(urlValueToXML(p)))
