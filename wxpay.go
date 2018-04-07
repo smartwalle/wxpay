@@ -5,14 +5,19 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"sort"
 	"strings"
-	"errors"
-	"net/url"
+)
+
+const (
+	k_WXPAY_SANDBOX_API_URL    = "https://api.mch.weixin.qq.com/sandbox"
+	k_WXPAY_PRODUCTION_API_URL = "https://api.mch.weixin.qq.com"
 )
 
 type WXPay struct {
@@ -20,15 +25,21 @@ type WXPay struct {
 	apiKey    string
 	mchId     string
 	Client    *http.Client
+	apiDomain string
 	NotifyURL string
 }
 
-func New(appId, apiKey, mchId string) (client *WXPay) {
+func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	client = &WXPay{}
 	client.appId = appId
 	client.mchId = mchId
 	client.apiKey = apiKey
 	client.Client = http.DefaultClient
+	if isProduction {
+		client.apiDomain = k_WXPAY_PRODUCTION_API_URL
+	} else {
+		client.apiDomain = k_WXPAY_SANDBOX_API_URL
+	}
 	return client
 }
 
@@ -77,6 +88,25 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 
 func (this *WXPay) DoRequest(method, url string, param WXPayParam, results interface{}) (err error) {
 	return this.doRequest(method, url, param, results)
+}
+
+func (this *WXPay) BuildAPI(paths ...string) string {
+	var path = this.apiDomain
+	for _, p := range paths {
+		p = strings.TrimSpace(p)
+		if len(p) > 0 {
+			if strings.HasSuffix(path, "/") {
+				path = path + p
+			} else {
+				if strings.HasPrefix(p, "/") {
+					path = path + p
+				} else {
+					path = path + "/" + p
+				}
+			}
+		}
+	}
+	return path
 }
 
 func mapToXML(m map[string]interface{}) string {
