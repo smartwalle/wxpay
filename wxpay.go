@@ -134,6 +134,13 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 		return false, err
 	}
 
+	// 优先处理错误信息
+	var code = param["return_code"].(string)
+	if code == K_RETURN_CODE_FAIL {
+		var msg = param["return_msg"].(string)
+		return true, errors.New(msg)
+	}
+
 	var sign = param["sign"]
 	delete(param, "sign")
 	if sign == "" {
