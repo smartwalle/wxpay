@@ -3,14 +3,15 @@ package wxpay
 import (
 	"encoding/xml"
 	"io"
+	"net/url"
 )
 
 type WXPayParam interface {
 	// 返回参数列表
-	Params() map[string]interface{}
+	Params() url.Values
 }
 
-type XMLMap map[string]interface{}
+type XMLMap url.Values
 
 type xmlMapEntry struct {
 	XMLName xml.Name
@@ -26,7 +27,46 @@ func (m XMLMap) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
 		} else if err != nil {
 			return err
 		}
-		(m)[e.XMLName.Local] = e.Value
+		(m)[e.XMLName.Local] = []string{e.Value}
 	}
 	return nil
+}
+
+func (v XMLMap) Get(key string) string {
+	if v == nil {
+		return ""
+	}
+	vs := v[key]
+	if len(vs) == 0 {
+		return ""
+	}
+	return vs[0]
+}
+
+func (v XMLMap) Set(key, value string) {
+	v[key] = []string{value}
+}
+
+func (v XMLMap) Add(key, value string) {
+	v[key] = append(v[key], value)
+}
+
+func (v XMLMap) Del(key string) {
+	delete(v, key)
+}
+
+type GetSignKeyParam struct {
+	MchId string
+}
+
+func (this *GetSignKeyParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("mch_id", this.MchId)
+	return m
+}
+
+type GetSignKeyResp struct {
+	ReturnCode     string `xml:"return_code"`
+	ReturnMsg      string `xml:"return_msg"`
+	SandboxSignKey string `xml:"sandbox_signkey"`
 }

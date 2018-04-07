@@ -2,6 +2,8 @@ package wxpay
 
 import (
 	"encoding/json"
+	"fmt"
+	"net/url"
 )
 
 const (
@@ -40,52 +42,54 @@ type StoreInfo struct {
 	Address  string `json:"address"`   // 门店详细地址
 }
 
-func (this *UnifiedOrderParam) Params() map[string]interface{} {
-	var m = make(map[string]interface{})
-	m["notify_url"] = this.NotifyURL
+func (this *UnifiedOrderParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
 		this.SignType = K_SIGN_TYPE_MD5
 	}
-	m["sign_type"] = this.SignType
-	m["device_info"] = this.DeviceInfo
-	m["body"] = this.Body
-	m["detail"] = this.Detail
-	m["attach"] = this.Attach
-	m["out_trade_no"] = this.OutTradeNo
-	m["fee_type"] = this.FeeType
-	m["total_fee"] = this.TotalFee
-	m["spbill_create_ip"] = this.SpbillCreateIP
-	m["time_start"] = this.TimeStart
-	m["time_expire"] = this.TimeExpire
-	m["goods_tag"] = this.GoodsTag
+	m.Set("sign_type", this.SignType)
+	m.Set("device_info", this.DeviceInfo)
+	m.Set("body", this.Body)
+	m.Set("detail", this.Detail)
+	m.Set("attach", this.Attach)
+	m.Set("out_trade_no", this.OutTradeNo)
+	m.Set("fee_type", this.FeeType)
+	m.Set("total_fee", fmt.Sprintf("%d", this.TotalFee))
+	m.Set("spbill_create_ip", this.SpbillCreateIP)
+	m.Set("time_start", this.TimeStart)
+	m.Set("time_expire", this.TimeExpire)
+	m.Set("goods_tag", this.GoodsTag)
 	if len(this.TradeType) == 0 {
 		this.TradeType = K_TRADE_TYPE_APP
 	}
-	m["trade_type"] = this.TradeType
-	m["product_id"] = this.ProductId
-	m["limit_pay"] = this.LimitPay
-	m["open_id"] = this.OpenId
+	m.Set("trade_type", this.TradeType)
+	m.Set("product_id", this.ProductId)
+	m.Set("limit_pay", this.LimitPay)
+	m.Set("open_id", this.OpenId)
 
 	if this.StoreInfo != nil {
 		var storeInfoByte, err = json.Marshal(this.StoreInfo)
 		if err == nil {
 			this.SceneInfo = "{\"store_info\" :" + string(storeInfoByte) + "}"
-			m["scene_info"] = this.SceneInfo
+			m.Set("scene_info", this.SceneInfo)
 		}
 	}
 	return m
 }
 
 type UnifiedOrderResp struct {
-	ReturnCode string `xml:"return_code"`
-	ReturnMsg  string `xml:"return_msg"`
-	AppId      string `xml:"appid"`
-	MCHId      string `xml:"mch_id"`
-	DeviceInfo string `xml:"device_info"`
-	NonceStr   string `xml:"nonce_str"`
-	Sign       string `xml:"sign"`
-	ResultCode string `xml:"result_code"`
-	PrepayId   string `xml:"prepay_id"`
-	TradeType  string `xml:"trade_type"`
-	CodeURL    string `xml:"code_url"`
+	ReturnCode  string `xml:"return_code"`
+	ReturnMsg   string `xml:"return_msg"`
+	AppId       string `xml:"appid"`
+	MCHId       string `xml:"mch_id"`
+	DeviceInfo  string `xml:"device_info"`
+	NonceStr    string `xml:"nonce_str"`
+	Sign        string `xml:"sign"`
+	ResultCode  string `xml:"result_code"`
+	ErrCode     string `json:"err_code"`
+	EerrCodeDes string `json:"eerr_code_des"`
+	PrepayId    string `xml:"prepay_id"`
+	TradeType   string `xml:"trade_type"`
+	CodeURL     string `xml:"code_url"`
 }

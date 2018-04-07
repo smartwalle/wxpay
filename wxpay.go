@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -16,17 +15,18 @@ import (
 )
 
 const (
-	k_WXPAY_SANDBOX_API_URL    = "https://api.mch.weixin.qq.com/sandbox"
+	k_WXPAY_SANDBOX_API_URL    = "https://api.mch.weixin.qq.com/sandboxnew"
 	k_WXPAY_PRODUCTION_API_URL = "https://api.mch.weixin.qq.com"
 )
 
 type WXPay struct {
-	appId     string
-	apiKey    string
-	mchId     string
-	Client    *http.Client
-	apiDomain string
-	NotifyURL string
+	appId        string
+	apiKey       string
+	mchId        string
+	Client       *http.Client
+	apiDomain    string
+	NotifyURL    string
+	isProduction bool
 }
 
 func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
@@ -35,6 +35,7 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	client.mchId = mchId
 	client.apiKey = apiKey
 	client.Client = http.DefaultClient
+	client.isProduction = isProduction
 	if isProduction {
 		client.apiDomain = k_WXPAY_PRODUCTION_API_URL
 	} else {
@@ -43,21 +44,38 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	return client
 }
 
-func (this *WXPay) doRequest(method, url string, param WXPayParam, results interface{}) (err error) {
+func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, err error) {
 	var p = param.Params()
-	p["appid"] = this.appId
-	p["mch_id"] = this.mchId
-	p["nonce_str"] = getNonceStr()
+	p.Set("appid", this.appId)
+	p.Set("mch_id", this.mchId)
+	p.Set("nonce_str", getNonceStr())
+
 	if _, ok := p["notify_url"]; ok == false {
 		if len(this.NotifyURL) > 0 {
-			p["notify_url"] = this.NotifyURL
+			p.Set("notify_url", this.NotifyURL)
 		}
 	}
 
-	var sign = signMD5(p, this.apiKey)
-	p["sign"] = sign
+	var sign = signMD5(p, key)
+	p.Set("sign", sign)
+	return p, nil
+}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(mapToXML(p)))
+func (this *WXPay) doRequest(method, url string, param WXPayParam, results interface{}) (err error) {
+	var key = this.apiKey
+	if this.isProduction == false {
+		key, err = this.getSignKey()
+		if err != nil {
+			return err
+		}
+	}
+
+	p, err := this.URLValues(param, key)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest(method, url, strings.NewReader(urlValueToXML(p)))
 	if err != nil {
 		return err
 	}
@@ -77,7 +95,7 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 		return err
 	}
 
-	if ok, err := verifyResponseData(data, this.apiKey); ok == false {
+	if _, err := verifyResponseData(data, key); err != nil {
 		return err
 	}
 
@@ -88,6 +106,40 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 
 func (this *WXPay) DoRequest(method, url string, param WXPayParam, results interface{}) (err error) {
 	return this.doRequest(method, url, param, results)
+}
+
+func (this *WXPay) getSignKey() (key string, err error) {
+	var p = make(url.Values)
+	p.Set("mch_id", this.mchId)
+	p.Set("nonce_str", getNonceStr())
+
+	var sign = signMD5(p, this.apiKey)
+	p.Set("sign", sign)
+
+	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(urlValueToXML(p)))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Accept", "application/xml")
+	req.Header.Set("Content-Type", "application/xml;charset=utf-8")
+
+	resp, err := this.Client.Do(req)
+	if resp != nil {
+		defer resp.Body.Close()
+	}
+	if err != nil {
+		return "", err
+	}
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var signKey *GetSignKeyResp
+	if err = xml.Unmarshal(data, &signKey); err != nil {
+		return "", err
+	}
+	return signKey.SandboxSignKey, nil
 }
 
 func (this *WXPay) BuildAPI(paths ...string) string {
@@ -109,12 +161,12 @@ func (this *WXPay) BuildAPI(paths ...string) string {
 	return path
 }
 
-func mapToXML(m map[string]interface{}) string {
+func urlValueToXML(m url.Values) string {
 	var xmlBuffer = &bytes.Buffer{}
 	xmlBuffer.WriteString("<xml>")
 
-	for key, value := range m {
-		var value = fmt.Sprintf("%v", value)
+	for key, _ := range m {
+		var value = m.Get(key)
 		if key == "total_fee" || key == "refund_fee" || key == "execute_time_" {
 			xmlBuffer.WriteString("<" + key + ">" + value + "</" + key + ">")
 		} else {
@@ -125,7 +177,7 @@ func mapToXML(m map[string]interface{}) string {
 	return xmlBuffer.String()
 }
 
-func signMD5(param map[string]interface{}, key string) (sign string) {
+func signMD5(param url.Values, key string) (sign string) {
 	var keys = make([]string, 0, 0)
 	for key := range param {
 		keys = append(keys, key)
@@ -134,7 +186,7 @@ func signMD5(param map[string]interface{}, key string) (sign string) {
 	sort.Strings(keys)
 	var pList = make([]string, 0, 0)
 	for _, key := range keys {
-		var value = fmt.Sprintf("%v", param[key])
+		var value = param.Get(key)
 		if len(value) > 0 {
 			pList = append(pList, key+"="+value)
 		}
@@ -164,20 +216,27 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 		return false, err
 	}
 
-	// 优先处理错误信息
-	var code = param["return_code"].(string)
+	// 处理错误信息
+	var code = param.Get("return_code")
 	if code == K_RETURN_CODE_FAIL {
-		var msg = param["return_msg"].(string)
-		return true, errors.New(msg)
+		var msg = param.Get("return_msg")
+		return false, errors.New(msg)
 	}
 
-	var sign = param["sign"]
+	code = param.Get("result_code")
+	if code == K_RETURN_CODE_FAIL {
+		var msg = param.Get("err_code_des")
+		return false, errors.New(msg)
+	}
+
+	// 验证签名
+	var sign = param.Get("sign")
 	delete(param, "sign")
 	if sign == "" {
 		return false, errors.New("签名验证失败")
 	}
 
-	var sign2 = signMD5(param, key)
+	var sign2 = signMD5(url.Values(param), key)
 	if sign == sign2 {
 		return true, nil
 	}

@@ -1,7 +1,5 @@
 package wxpay
 
-import "errors"
-
 const (
 	k_UNIFIED_ORDER_URL = "/pay/unifiedorder"
 )
@@ -10,9 +8,6 @@ const (
 func (this *WXPay) UnifiedOrder(param *UnifiedOrderParam) (results *UnifiedOrderResp, err error) {
 	if err = this.doRequest("POST", this.BuildAPI(k_UNIFIED_ORDER_URL), param, &results); err != nil {
 		return nil, err
-	}
-	if results.ReturnCode == K_RETURN_CODE_FAIL {
-		return nil, errors.New(results.ReturnMsg)
 	}
 	return results, err
 }
