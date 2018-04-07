@@ -6,7 +6,6 @@ import (
 	"encoding/hex"
 	"encoding/xml"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -93,8 +92,6 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 		return err
 	}
 
-	fmt.Println(string(data))
-
 	if _, err := verifyResponseData(data, key); err != nil {
 		return err
 	}
@@ -177,7 +174,7 @@ func urlValueToXML(m url.Values) string {
 	var xmlBuffer = &bytes.Buffer{}
 	xmlBuffer.WriteString("<xml>")
 
-	for key, _ := range m {
+	for key := range m {
 		var value = m.Get(key)
 		if key == "total_fee" || key == "refund_fee" || key == "execute_time_" {
 			xmlBuffer.WriteString("<" + key + ">" + value + "</" + key + ">")

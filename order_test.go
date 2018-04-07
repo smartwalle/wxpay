@@ -33,5 +33,5 @@ func TestWXPay_OrderQuery(t *testing.T) {
 		fmt.Println(err)
 		t.Fatal(err)
 	}
-	fmt.Println(result.TradeState)
+	fmt.Println(result.TradeState, result.OutTradeNo, result.TransactionId)
 }
