@@ -87,4 +87,5 @@ type UnifiedOrderResp struct {
 	ResultCode string `xml:"result_code"`
 	PrepayId   string `xml:"prepay_id"`
 	TradeType  string `xml:"trade_type"`
+	CodeURL    string `xml:"code_url"`
 }
