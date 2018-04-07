@@ -13,6 +13,16 @@ const (
 	K_TRADE_TYPE_MWEB   = "MWEB"
 )
 
+const (
+	K_TRADE_STATUS_SUCCESS    = "SUCCESS"    //支付成功
+	K_TRADE_STATUS_REFUND     = "REFUND"     //转入退款
+	K_TRADE_STATUS_NOTPAY     = "NOTPAY"     //未支付
+	K_TRADE_STATUS_CLOSED     = "CLOSED"     //已关闭
+	K_TRADE_STATUS_REVOKED    = "REVOKED"    //已撤销（刷卡支付）
+	K_TRADE_STATUS_USERPAYING = "USERPAYING" //用户支付中
+	K_TRADE_STATUS_PAYERROR   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
+)
+
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 type UnifiedOrderParam struct {
 	NotifyURL      string     `xml:"notify_url"`       // 是 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
@@ -43,7 +53,7 @@ type StoreInfo struct {
 	Address  string `json:"address"`   // 门店详细地址
 }
 
-func (this *UnifiedOrderParam) Params() url.Values {
+func (this UnifiedOrderParam) Params() url.Values {
 	var m = make(url.Values)
 	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
@@ -80,18 +90,62 @@ func (this *UnifiedOrderParam) Params() url.Values {
 }
 
 type UnifiedOrderResp struct {
-	ReturnCode  string `xml:"return_code"`
-	ReturnMsg   string `xml:"return_msg"`
-	AppId       string `xml:"appid"`
-	MCHId       string `xml:"mch_id"`
-	DeviceInfo  string `xml:"device_info"`
-	NonceStr    string `xml:"nonce_str"`
-	Sign        string `xml:"sign"`
-	ResultCode  string `xml:"result_code"`
-	ErrCode     string `json:"err_code"`
-	EerrCodeDes string `json:"eerr_code_des"`
-	PrepayId    string `xml:"prepay_id"`
-	TradeType   string `xml:"trade_type"`
-	CodeURL     string `xml:"code_url"`
-	MWebURL     string `xml:"mweb_url"`
+	ReturnCode string `xml:"return_code"`
+	ReturnMsg  string `xml:"return_msg"`
+	AppId      string `xml:"appid"`
+	MCHId      string `xml:"mch_id"`
+	DeviceInfo string `xml:"device_info"`
+	NonceStr   string `xml:"nonce_str"`
+	Sign       string `xml:"sign"`
+	ResultCode string `xml:"result_code"`
+	ErrCode    string `xml:"err_code"`
+	ErrCodeDes string `xml:"err_code_des"`
+	PrepayId   string `xml:"prepay_id"`
+	TradeType  string `xml:"trade_type"`
+	CodeURL    string `xml:"code_url"`
+	MWebURL    string `xml:"mweb_url"`
+}
+
+// https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
+type OrderQueryParam struct {
+	TransactionId string `xml:"transaction_id"`
+	OutTradeNo    string `xml:"out_trade_no"`
+}
+
+func (this OrderQueryParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("transaction_id", this.TransactionId)
+	m.Set("out_trade_no", this.OutTradeNo)
+	return m
+}
+
+type OrderQueryResp struct {
+	ReturnCode string `xml:"return_code"`
+	ReturnMsg  string `xml:"return_msg"`
+	AppId      string `xml:"appid"`
+	MCHId      string `xml:"mch_id"`
+	DeviceInfo string `xml:"device_info"`
+	NonceStr   string `xml:"nonce_str"`
+	Sign       string `xml:"sign"`
+	ResultCode string `xml:"result_code"`
+	ErrCode    string `xml:"err_code"`
+	ErrCodeDes string `xml:"err_code_des"`
+
+	OpenId             string `xml:"openid"`
+	IsSubscribe        string `xml:"is_subscribe"`
+	TradeType          string `xml:"trade_type"`
+	TradeState         string `xml:"trade_state"`
+	BankType           string `xml:"bank_type"`
+	TotalFee           int    `xml:"total_fee"`
+	SettlementTotalFee int    `xml:"settlement_total_fee"`
+	FeeType            string `xml:"fee_type"`
+	CashFee            int    `xml:"cash_fee"`
+	CashFeeType        string `xml:"cash_fee_type"`
+	CouponFee          int    `xml:"coupon_fee"`
+	CouponCount        int    `xml:"coupon_count"`
+	TransactionId      string `xml:"transaction_id"`
+	OutTradeNo         string `xml:"out_trade_no"`
+	Attach             string `xml:"attach"`
+	TimeEnd            string `xml:"time_end"`
+	TradeStateDesc     string `xml:"trade_state_desc"`
 }
