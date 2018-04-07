@@ -11,6 +11,8 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"errors"
+	"net/url"
 )
 
 type WXPay struct {
@@ -64,6 +66,10 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 		return err
 	}
 
+	if ok, err := verifyResponseData(data, this.apiKey); ok == false {
+		return err
+	}
+
 	err = xml.Unmarshal(data, results)
 
 	return err
@@ -89,7 +95,7 @@ func mapToXML(m map[string]interface{}) string {
 	return xmlBuffer.String()
 }
 
-func signMD5(param map[string]interface{}, apiKey string) (sign string) {
+func signMD5(param map[string]interface{}, key string) (sign string) {
 	var keys = make([]string, 0, 0)
 	for key := range param {
 		keys = append(keys, key)
@@ -103,8 +109,8 @@ func signMD5(param map[string]interface{}, apiKey string) (sign string) {
 			pList = append(pList, key+"="+value)
 		}
 	}
-	if apiKey != "" {
-		pList = append(pList, "key="+apiKey)
+	if key != "" {
+		pList = append(pList, "key="+key)
 	}
 
 	var src = strings.Join(pList, "&")
@@ -114,6 +120,31 @@ func signMD5(param map[string]interface{}, apiKey string) (sign string) {
 
 	sign = strings.ToUpper(hex.EncodeToString(cipherStr))
 	return sign
+}
+
+// TODO 用于验证 notify url
+func verifySign(data url.Values, key string) (ok bool, err error) {
+	return ok, err
+}
+
+func verifyResponseData(data []byte, key string) (ok bool, err error) {
+	var param = make(XMLMap)
+	err = xml.Unmarshal(data, &param)
+	if err != nil {
+		return false, err
+	}
+
+	var sign = param["sign"]
+	delete(param, "sign")
+	if sign == "" {
+		return false, errors.New("签名验证失败")
+	}
+
+	var sign2 = signMD5(param, key)
+	if sign == sign2 {
+		return true, nil
+	}
+	return false, errors.New("签名验证失败")
 }
 
 func getNonceStr() (nonceStr string) {
