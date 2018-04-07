@@ -1,7 +1,7 @@
 package wxpay
 
 import (
-	"github.com/gin-gonic/gin/json"
+	"encoding/json"
 )
 
 const (
