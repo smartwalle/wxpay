@@ -10,6 +10,7 @@ const (
 	K_TRADE_TYPE_JSAPI  = "JSAPI"
 	K_TRADE_TYPE_NATIVE = "NATIVE"
 	K_TRADE_TYPE_APP    = "APP"
+	K_TRADE_TYPE_MWEB   = "MWEB"
 )
 
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
@@ -92,4 +93,5 @@ type UnifiedOrderResp struct {
 	PrepayId    string `xml:"prepay_id"`
 	TradeType   string `xml:"trade_type"`
 	CodeURL     string `xml:"code_url"`
+	MWebURL     string `xml:"mweb_url"`
 }
