@@ -213,11 +213,6 @@ func signMD5(param url.Values, key string) (sign string) {
 	return sign
 }
 
-// TODO 用于验证 notify url
-func verifySign(data url.Values, key string) (ok bool, err error) {
-	return ok, err
-}
-
 func verifyResponseData(data []byte, key string) (ok bool, err error) {
 	var param = make(XMLMap)
 	err = xml.Unmarshal(data, &param)
