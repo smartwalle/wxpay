@@ -117,6 +117,10 @@ func (this *WXPay) getKey() (key string, err error) {
 	return key, err
 }
 
+func (this *WXPay) SignMD5(param url.Values) (sign string) {
+	return SignMD5(param, this.apiKey)
+}
+
 func (this *WXPay) getSignKey(apiKey string) (key string, err error) {
 	var p = make(url.Values)
 	p.Set("mch_id", this.mchId)
