@@ -56,7 +56,7 @@ func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, er
 		}
 	}
 
-	var sign = signMD5(p, key)
+	var sign = SignMD5(p, key)
 	p.Set("sign", sign)
 	return p, nil
 }
@@ -122,7 +122,7 @@ func (this *WXPay) getSignKey(apiKey string) (key string, err error) {
 	p.Set("mch_id", this.mchId)
 	p.Set("nonce_str", getNonceStr())
 
-	var sign = signMD5(p, apiKey)
+	var sign = SignMD5(p, apiKey)
 	p.Set("sign", sign)
 
 	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(urlValueToXML(p)))
@@ -186,7 +186,7 @@ func urlValueToXML(m url.Values) string {
 	return xmlBuffer.String()
 }
 
-func signMD5(param url.Values, key string) (sign string) {
+func SignMD5(param url.Values, key string) (sign string) {
 	var keys = make([]string, 0, 0)
 	for key := range param {
 		keys = append(keys, key)
@@ -240,7 +240,7 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 		return false, errors.New("签名验证失败")
 	}
 
-	var sign2 = signMD5(url.Values(param), key)
+	var sign2 = SignMD5(url.Values(param), key)
 	if sign == sign2 {
 		return true, nil
 	}
