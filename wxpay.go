@@ -191,19 +191,14 @@ func urlValueToXML(m url.Values) string {
 }
 
 func SignMD5(param url.Values, key string) (sign string) {
-	var keys = make([]string, 0, 0)
-	for key := range param {
-		keys = append(keys, key)
-	}
-
-	sort.Strings(keys)
 	var pList = make([]string, 0, 0)
-	for _, key := range keys {
+	for key := range param {
 		var value = param.Get(key)
 		if len(value) > 0 {
 			pList = append(pList, key+"="+value)
 		}
 	}
+	sort.Strings(pList)
 	if key != "" {
 		pList = append(pList, "key="+key)
 	}
