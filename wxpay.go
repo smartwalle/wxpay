@@ -12,6 +12,7 @@ import (
 	"net/url"
 	"sort"
 	"strings"
+	"time"
 )
 
 const (
@@ -248,8 +249,9 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 
 func getNonceStr() (nonceStr string) {
 	chars := "abcdefghijklmnopqrstuvwxyz0123456789"
+	var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < 32; i++ {
-		idx := rand.Intn(len(chars) - 1)
+		idx := r.Intn(len(chars) - 1)
 		nonceStr += chars[idx : idx+1]
 	}
 	return nonceStr
