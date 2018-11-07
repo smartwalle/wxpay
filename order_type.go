@@ -41,7 +41,7 @@ type UnifiedOrderParam struct {
 	GoodsTag       string     `xml:"goods_tag"`        // 否 订单优惠标记，使用代金券或立减优惠功能时需要的参数，说明详见代金券或立减优惠
 	ProductId      string     `xml:"product_id"`       // 否 trade_type=NATIVE时（即扫码支付），此参数必传。此参数为二维码中包含的商品ID，商户自行定义。
 	LimitPay       string     `xml:"limit_pay"`        // 否 上传此参数no_credit--可限制用户不能使用信用卡支付
-	OpenId         string     `xml:"openid"`          // 否 trade_type=JSAPI时（即公众号支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识。openid如何获取，可参考【获取openid】。企业号请使用【企业号OAuth2.0接口】获取企业号内成员userid，再调用【企业号userid转openid接口】进行转换
+	OpenId         string     `xml:"openid"`           // 否 trade_type=JSAPI时（即公众号支付），此参数必传，此参数为微信用户在商户对应appid下的唯一标识。openid如何获取，可参考【获取openid】。企业号请使用【企业号OAuth2.0接口】获取企业号内成员userid，再调用【企业号userid转openid接口】进行转换
 	SceneInfo      string     `xml:"scene_info"`       // 否 该字段用于上报场景信息，目前支持上报实际门店信息。该字段为JSON对象数据，对象格式为{"store_info":{"id": "门店ID","name": "名称","area_code": "编码","address": "地址" }} ，字段详细说明请点击行前的+展开
 	StoreInfo      *StoreInfo `xml:"-"`
 }

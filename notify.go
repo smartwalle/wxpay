@@ -1,10 +1,10 @@
 package wxpay
 
 import (
-	"net/http"
-	"io/ioutil"
-	"errors"
 	"encoding/xml"
+	"errors"
+	"io/ioutil"
+	"net/http"
 )
 
 // GetTradeNotification https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&index=3

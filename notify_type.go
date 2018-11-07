@@ -13,18 +13,18 @@ type TradeNotification struct {
 	ErrCode    string `xml:"err_code"`
 	ErrCodeDes string `xml:"err_code_des"`
 
-	OpenId             string `xml:"openid"`
-	IsSubscribe        string `xml:"is_subscribe"`
-	TradeType          string `xml:"trade_type"`
-	BankType           string `xml:"bank_type"`
-	TotalFee           int    `xml:"total_fee"`
-	FeeType            string `xml:"fee_type"`
-	CashFee            int    `xml:"cash_fee"`
-	CashFeeType        string `xml:"cash_fee_type"`
-	CouponFee          int    `xml:"coupon_fee"`
-	CouponCount        int    `xml:"coupon_count"`
-	TransactionId      string `xml:"transaction_id"`
-	OutTradeNo         string `xml:"out_trade_no"`
-	Attach             string `xml:"attach"`
-	TradeState         string `xml:"trade_state"`
+	OpenId        string `xml:"openid"`
+	IsSubscribe   string `xml:"is_subscribe"`
+	TradeType     string `xml:"trade_type"`
+	BankType      string `xml:"bank_type"`
+	TotalFee      int    `xml:"total_fee"`
+	FeeType       string `xml:"fee_type"`
+	CashFee       int    `xml:"cash_fee"`
+	CashFeeType   string `xml:"cash_fee_type"`
+	CouponFee     int    `xml:"coupon_fee"`
+	CouponCount   int    `xml:"coupon_count"`
+	TransactionId string `xml:"transaction_id"`
+	OutTradeNo    string `xml:"out_trade_no"`
+	Attach        string `xml:"attach"`
+	TradeState    string `xml:"trade_state"`
 }
