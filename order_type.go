@@ -151,3 +151,27 @@ type OrderQueryResp struct {
 	TimeEnd            string `xml:"time_end"`
 	TradeStateDesc     string `xml:"trade_state_desc"`
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_3
+type CloseOrderParam struct {
+	OutTradeNo string `xml:"out_trade_no"` // 是 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。
+}
+
+func (this CloseOrderParam) Params() url.Values {
+	var m = make(url.Values)
+	return m
+}
+
+type CloseOrderResp struct {
+	ReturnCode string `xml:"return_code"`
+	ReturnMsg  string `xml:"return_msg"`
+	AppId      string `xml:"appid"`
+	MCHId      string `xml:"mch_id"`
+	DeviceInfo string `xml:"device_info"`
+	NonceStr   string `xml:"nonce_str"`
+	Sign       string `xml:"sign"`
+	ResultCode string `xml:"result_code"`
+	ErrCode    string `xml:"err_code"`
+	ErrCodeDes string `xml:"err_code_des"`
+}

@@ -1,12 +1,11 @@
 package wxpay
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestWXPay_UnifiedOrder(t *testing.T) {
-	fmt.Println("========== UnifiedOrder ==========")
+	t.Log("========== UnifiedOrder ==========")
 	var p = UnifiedOrderParam{}
 	p.Body = "test product"
 	p.NotifyURL = "http://www.test.com"
@@ -17,21 +16,31 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 
 	result, err := client.UnifiedOrder(p)
 	if err != nil {
-		fmt.Println(err)
 		t.Fatal(err)
 	}
-	fmt.Println(result.PrepayId, result.CodeURL)
+	t.Log(result.PrepayId, result.CodeURL)
 }
 
 func TestWXPay_OrderQuery(t *testing.T) {
-	fmt.Println("========== OrderQuery ==========")
+	t.Log("========== OrderQuery ==========")
 	var p = OrderQueryParam{}
 	p.OutTradeNo = "test-11111112"
 
 	result, err := client.OrderQuery(p)
 	if err != nil {
-		fmt.Println(err)
 		t.Fatal(err)
 	}
-	fmt.Println(result.TradeState, result.OutTradeNo, result.TransactionId)
+	t.Log(result.TradeState, result.OutTradeNo, result.TransactionId)
+}
+
+func TestWXPay_CloseOrder(t *testing.T) {
+	t.Log("========== CloseOrder ==========")
+	var p = CloseOrderParam{}
+	p.OutTradeNo = "test-11111112"
+
+	result, err := client.CloseOrder(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(result.ReturnCode, result.ReturnMsg)
 }
