@@ -14,15 +14,16 @@ const (
 )
 
 const (
-	K_TRADE_STATUS_SUCCESS    = "SUCCESS"    //支付成功
-	K_TRADE_STATUS_REFUND     = "REFUND"     //转入退款
-	K_TRADE_STATUS_NOTPAY     = "NOTPAY"     //未支付
-	K_TRADE_STATUS_CLOSED     = "CLOSED"     //已关闭
-	K_TRADE_STATUS_REVOKED    = "REVOKED"    //已撤销（刷卡支付）
-	K_TRADE_STATUS_USERPAYING = "USERPAYING" //用户支付中
-	K_TRADE_STATUS_PAYERROR   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
+	K_TRADE_STATE_SUCCESS    = "SUCCESS"    //支付成功
+	K_TRADE_STATE_REFUND     = "REFUND"     //转入退款
+	K_TRADE_STATE_NOTPAY     = "NOTPAY"     //未支付
+	K_TRADE_STATE_CLOSED     = "CLOSED"     //已关闭
+	K_TRADE_STATE_REVOKED    = "REVOKED"    //已撤销（刷卡支付）
+	K_TRADE_STATE_USERPAYING = "USERPAYING" //用户支付中
+	K_TRADE_STATE_PAYERROR   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
 )
 
+////////////////////////////////////////////////////////////////////////////////
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 type UnifiedOrderParam struct {
 	NotifyURL      string     `xml:"notify_url"`       // 是 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
@@ -106,6 +107,7 @@ type UnifiedOrderResp struct {
 	MWebURL    string `xml:"mweb_url"`
 }
 
+////////////////////////////////////////////////////////////////////////////////
 // https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
 type OrderQueryParam struct {
 	TransactionId string `xml:"transaction_id"`
