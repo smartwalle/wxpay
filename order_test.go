@@ -12,7 +12,7 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	p.TradeType = K_TRADE_TYPE_NATIVE
 	p.SpbillCreateIP = "202.105.107.18"
 	p.TotalFee = 101
-	p.OutTradeNo = "test-11111112"
+	p.OutTradeNo = "test-111111122sdf"
 
 	result, err := client.UnifiedOrder(p)
 	if err != nil {

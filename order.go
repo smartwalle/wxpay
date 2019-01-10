@@ -4,6 +4,7 @@ const (
 	kUnifiedOrder = "/pay/unifiedorder"
 	kOrderQuery   = "/pay/orderquery"
 	kCloseOrder   = "/pay/closeorder"
+	kDownloadBill = "/pay/downloadbill"
 )
 
 // UnifiedOrder https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
@@ -29,3 +30,11 @@ func (this *WXPay) CloseOrder(param CloseOrderParam) (result *CloseOrderResp, er
 	}
 	return result, err
 }
+
+// DownloadBill https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
+//func (this *WXPay) DownloadBill(param DownloadBillParam) (result *DownloadBillResp, err error){
+//	if err = this.doRequest("POST", this.BuildAPI(kDownloadBill), param, &result); err != nil {
+//		return nil, err
+//	}
+//	return result, err
+//}
