@@ -78,7 +78,7 @@ func (this UnifiedOrderParam) Params() url.Values {
 	m.Set("trade_type", this.TradeType)
 	m.Set("product_id", this.ProductId)
 	m.Set("limit_pay", this.LimitPay)
-	m.Set("open_id", this.OpenId)
+	m.Set("openid", this.OpenId)
 
 	if this.StoreInfo != nil {
 		var storeInfoByte, err = json.Marshal(this.StoreInfo)
