@@ -41,7 +41,7 @@ func (this *WXPay) CloseOrder(param CloseOrderParam) (result *CloseOrderResp, er
 }
 
 var (
-	kXXX = []byte("<")
+	kXML = []byte("<xml>")
 )
 
 // DownloadBill https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
@@ -76,7 +76,7 @@ func (this *WXPay) DownloadBill(param DownloadBillParam) (result *DownloadBillRe
 		return nil, err
 	}
 
-	if bytes.Index(data, kXXX) == 0 {
+	if bytes.Index(data, kXML) == 0 {
 		err = xml.Unmarshal(data, &result)
 	} else {
 		if this.isProduction {
