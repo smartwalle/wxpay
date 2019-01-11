@@ -179,21 +179,22 @@ type CloseOrderResp struct {
 
 ////////////////////////////////////////////////////////////////////////////////
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
-//type DownloadBillParam struct {
-//	BillDate string `xml:"bill_date"` // 是 下载对账单的日期，格式：20140603
-//	BillType string `xml:"bill_type"` // 是 ALL，返回当日所有订单信息，默认值；SUCCESS，返回当日成功支付的订单；REFUND，返回当日退款订单；RECHARGE_REFUND，返回当日充值退款订单
-//	TarType  string `xml:"tar_type"`  // 否 非必传参数，固定值：GZIP，返回格式为.gzip的压缩包账单。不传则默认为数据流形式。
-//}
-//
-//func (this DownloadBillParam) Params() url.Values {
-//	var m = make(url.Values)
-//	m.Set("bill_date", this.BillDate)
-//	m.Set("bill_type", this.BillType)
-//	m.Set("tar_type", this.TarType)
-//	return m
-//}
-//
-//type DownloadBillResp struct {
-//	ReturnCode string `xml:"return_code"`
-//	ReturnMsg  string `xml:"return_msg"`
-//}
+type DownloadBillParam struct {
+	BillDate string `xml:"bill_date"` // 是 下载对账单的日期，格式：20140603
+	BillType string `xml:"bill_type"` // 是 ALL，返回当日所有订单信息，默认值；SUCCESS，返回当日成功支付的订单；REFUND，返回当日退款订单；RECHARGE_REFUND，返回当日充值退款订单
+	TarType  string `xml:"tar_type"`  // 否 非必传参数，固定值：GZIP，返回格式为.gzip的压缩包账单。不传则默认为数据流形式。
+}
+
+func (this DownloadBillParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("bill_date", this.BillDate)
+	m.Set("bill_type", this.BillType)
+	m.Set("tar_type", this.TarType)
+	return m
+}
+
+type DownloadBillResp struct {
+	ReturnCode string `xml:"return_code"`
+	ReturnMsg  string `xml:"return_msg"`
+	Data       []byte `xml:"-"`
+}

@@ -44,3 +44,18 @@ func TestWXPay_CloseOrder(t *testing.T) {
 	}
 	t.Log(result.ReturnCode, result.ReturnMsg)
 }
+
+func TestWXPay_DownloadBill(t *testing.T) {
+	t.Log("========== DownloadBill ==========")
+	var p = DownloadBillParam{}
+	p.BillDate = "20190108"
+	p.BillType = "ALL"
+	p.TarType = "GZIP"
+
+	result, err := client.DownloadBill(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(result.ReturnCode, result.ReturnMsg)
+	t.Log(string(result.Data))
+}
