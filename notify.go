@@ -35,12 +35,7 @@ func GetTradeNotification(req *http.Request, key string) (noti *TradeNotificatio
 }
 
 func (this *WXPay) AckNotification(w http.ResponseWriter) {
-	var v = url.Values{}
-	v.Set("return_code", "SUCCESS")
-	v.Set("return_msg", "OK")
-
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(urlValueToXML(v)))
+	AckNotification(w)
 }
 
 func AckNotification(w http.ResponseWriter) {
