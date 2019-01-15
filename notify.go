@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 )
 
 // GetTradeNotification https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&index=3
@@ -31,4 +32,13 @@ func GetTradeNotification(req *http.Request, key string) (noti *TradeNotificatio
 		return nil, err
 	}
 	return noti, err
+}
+
+func (this *WXPay) AckNotification(w http.ResponseWriter) {
+	var v = url.Values{}
+	v.Set("return_code", "SUCCESS")
+	v.Set("return_msg", "OK")
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(urlValueToXML(v)))
 }
