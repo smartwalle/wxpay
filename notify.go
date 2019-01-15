@@ -42,3 +42,12 @@ func (this *WXPay) AckNotification(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(urlValueToXML(v)))
 }
+
+func AckNotification(w http.ResponseWriter) {
+	var v = url.Values{}
+	v.Set("return_code", "SUCCESS")
+	v.Set("return_msg", "OK")
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(urlValueToXML(v)))
+}
