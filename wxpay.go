@@ -15,11 +15,6 @@ import (
 	"time"
 )
 
-const (
-	k_WXPAY_SANDBOX_API_URL    = "https://api.mch.weixin.qq.com/sandboxnew"
-	k_WXPAY_PRODUCTION_API_URL = "https://api.mch.weixin.qq.com"
-)
-
 type WXPay struct {
 	appId        string
 	apiKey       string
@@ -38,9 +33,9 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	client.Client = http.DefaultClient
 	client.isProduction = isProduction
 	if isProduction {
-		client.apiDomain = k_WXPAY_PRODUCTION_API_URL
+		client.apiDomain = kProductionURL
 	} else {
-		client.apiDomain = k_WXPAY_SANDBOX_API_URL
+		client.apiDomain = kSandBoxURL
 	}
 	return client
 }

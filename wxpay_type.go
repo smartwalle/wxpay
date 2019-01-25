@@ -6,6 +6,20 @@ import (
 	"net/url"
 )
 
+const (
+	kSandBoxURL    = "https://api.mch.weixin.qq.com/sandboxnew"
+	kProductionURL = "https://api.mch.weixin.qq.com"
+)
+
+const (
+	K_RETURN_CODE_FAIL    = "FAIL"
+	K_RETURN_CODE_SUCCESS = "SUCCESS"
+)
+
+const (
+	K_SIGN_TYPE_MD5 = "MD5"
+)
+
 type WXPayParam interface {
 	// 返回参数列表
 	Params() url.Values
