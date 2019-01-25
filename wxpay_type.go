@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	kSandBoxURL    = "https://api.mch.weixin.qq.com/sandboxnew"
+	kSandboxURL    = "https://api.mch.weixin.qq.com/sandboxnew"
 	kProductionURL = "https://api.mch.weixin.qq.com"
 )
 

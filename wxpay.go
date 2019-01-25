@@ -35,7 +35,7 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	if isProduction {
 		client.apiDomain = kProductionURL
 	} else {
-		client.apiDomain = kSandBoxURL
+		client.apiDomain = kSandboxURL
 	}
 	return client
 }
