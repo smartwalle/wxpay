@@ -228,6 +228,13 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 		return false, errors.New(msg)
 	}
 
+	//校验支付状态
+	state :=  param.Get("trade_state")
+	if state == "NOTPAY"{
+		var msg = param.Get("trade_state_desc")
+		return false, errors.New(msg)
+	}
+	
 	// 验证签名
 	var sign = param.Get("sign")
 	delete(param, "sign")
