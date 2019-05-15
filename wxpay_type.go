@@ -22,8 +22,8 @@ const (
 )
 
 var (
-	ErrNotFoundCertFile  = errors.New("wxpay: notfound cert file")
-	ErrNotFoundTLSClient = errors.New("wxpay: notfound tls client")
+	ErrNotFoundCertFile  = errors.New("wxpay: not found cert file")
+	ErrNotFoundTLSClient = errors.New("wxpay: not found tls client")
 )
 
 type WXPayParam interface {
