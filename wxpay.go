@@ -3,9 +3,12 @@ package wxpay
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/tls"
 	"encoding/hex"
+	"encoding/pem"
 	"encoding/xml"
 	"errors"
+	"golang.org/x/crypto/pkcs12"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -20,6 +23,7 @@ type WXPay struct {
 	apiKey       string
 	mchId        string
 	Client       *http.Client
+	tlsClient    *http.Client
 	apiDomain    string
 	NotifyURL    string
 	isProduction bool
@@ -40,6 +44,46 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
 	return client
 }
 
+func initTLSClient(cert []byte, password string) (tlsClient *http.Client, err error) {
+	if len(cert) > 0 {
+		cert, err := pkcs12ToPem(cert, password)
+		if err != nil {
+			return nil, err
+		}
+
+		config := &tls.Config{
+			Certificates: []tls.Certificate{cert},
+		}
+
+		transport := &http.Transport{
+			TLSClientConfig:    config,
+			DisableCompression: true,
+		}
+
+		tlsClient = &http.Client{Transport: transport}
+	}
+
+	return tlsClient, err
+}
+
+func (this *WXPay) LoadCert(path string) (err error) {
+	if len(path) == 0 {
+		return ErrNotFoundCertFile
+	}
+
+	cert, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	tlsClient, err := initTLSClient(cert, this.mchId)
+	if err != nil {
+		return err
+	}
+	this.tlsClient = tlsClient
+	return nil
+}
+
 func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, err error) {
 	var p = param.Params()
 	p.Set("appid", this.appId)
@@ -57,7 +101,19 @@ func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, er
 	return p, nil
 }
 
-func (this *WXPay) doRequest(method, url string, param WXPayParam, results interface{}) (err error) {
+func (this *WXPay) doRequest(method, url string, param WXPayParam, result interface{}) (err error) {
+	return this.doRequestWithClient(this.Client, method, url, param, result)
+}
+
+func (this *WXPay) doRequestWithTLS(method, url string, param WXPayParam, result interface{}) (err error) {
+	if this.tlsClient == nil {
+		return ErrNotFoundTLSClient
+	}
+
+	return this.doRequestWithClient(this.tlsClient, method, url, param, result)
+}
+
+func (this *WXPay) doRequestWithClient(client *http.Client, method, url string, param WXPayParam, result interface{}) (err error) {
 	key, err := this.getKey()
 	if err != nil {
 		return err
@@ -75,7 +131,7 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 	req.Header.Set("Accept", "application/xml")
 	req.Header.Set("Content-Type", "application/xml;charset=utf-8")
 
-	resp, err := this.Client.Do(req)
+	resp, err := client.Do(req)
 	if resp != nil {
 		defer resp.Body.Close()
 	}
@@ -92,7 +148,7 @@ func (this *WXPay) doRequest(method, url string, param WXPayParam, results inter
 		return err
 	}
 
-	err = xml.Unmarshal(data, results)
+	err = xml.Unmarshal(data, result)
 
 	return err
 }
@@ -250,4 +306,20 @@ func getNonceStr() (nonceStr string) {
 		nonceStr += chars[idx : idx+1]
 	}
 	return nonceStr
+}
+
+func pkcs12ToPem(p12 []byte, password string) (cert tls.Certificate, err error) {
+	blocks, err := pkcs12.ToPEM([]byte(p12), password)
+
+	if err != nil {
+		return cert, err
+	}
+
+	var pemData []byte
+	for _, b := range blocks {
+		pemData = append(pemData, pem.EncodeToMemory(b)...)
+	}
+
+	cert, err = tls.X509KeyPair(pemData, pemData)
+	return cert, err
 }

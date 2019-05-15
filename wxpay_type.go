@@ -2,6 +2,7 @@ package wxpay
 
 import (
 	"encoding/xml"
+	"errors"
 	"io"
 	"net/url"
 )
@@ -17,7 +18,12 @@ const (
 )
 
 const (
-	K_SIGN_TYPE_MD5 = "MD5"
+	kSignTypeMD5 = "MD5"
+)
+
+var (
+	ErrNotFoundCertFile  = errors.New("wxpay: notfound cert file")
+	ErrNotFoundTLSClient = errors.New("wxpay: notfound tls client")
 )
 
 type WXPayParam interface {

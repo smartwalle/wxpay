@@ -58,7 +58,7 @@ func (this UnifiedOrderParam) Params() url.Values {
 	var m = make(url.Values)
 	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
-		this.SignType = K_SIGN_TYPE_MD5
+		this.SignType = kSignTypeMD5
 	}
 	m.Set("sign_type", this.SignType)
 	m.Set("device_info", this.DeviceInfo)
