@@ -26,7 +26,7 @@ var (
 	ErrNotFoundTLSClient = errors.New("wxpay: not found tls client")
 )
 
-type WXPayParam interface {
+type Param interface {
 	// 返回参数列表
 	Params() url.Values
 }
@@ -85,7 +85,7 @@ func (this *GetSignKeyParam) Params() url.Values {
 	return m
 }
 
-type GetSignKeyResp struct {
+type GetSignKeyRsp struct {
 	ReturnCode     string `xml:"return_code"`
 	ReturnMsg      string `xml:"return_msg"`
 	SandboxSignKey string `xml:"sandbox_signkey"`

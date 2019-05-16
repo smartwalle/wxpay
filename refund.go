@@ -6,7 +6,7 @@ const (
 )
 
 // Refund https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_4&index=6
-func (this *WXPay) Refund(param RefundParam) (result *RefundResp, err error) {
+func (this *Client) Refund(param RefundParam) (result *RefundRsp, err error) {
 	var api = kRefundSandbox
 	if this.isProduction {
 		api = kRefund

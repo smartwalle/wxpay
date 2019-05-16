@@ -48,7 +48,7 @@ func (this RefundParam) Params() url.Values {
 	return m
 }
 
-type RefundResp struct {
+type RefundRsp struct {
 	ReturnCode          string `xml:"return_code"`
 	ReturnMsg           string `xml:"return_msg"`
 	ResultCode          string `xml:"result_code"`

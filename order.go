@@ -17,7 +17,7 @@ const (
 )
 
 // UnifiedOrder https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
-func (this *WXPay) UnifiedOrder(param UnifiedOrderParam) (result *UnifiedOrderResp, err error) {
+func (this *Client) UnifiedOrder(param UnifiedOrderParam) (result *UnifiedOrderRsp, err error) {
 	if err = this.doRequest("POST", this.BuildAPI(kUnifiedOrder), param, &result); err != nil {
 		return nil, err
 	}
@@ -25,7 +25,7 @@ func (this *WXPay) UnifiedOrder(param UnifiedOrderParam) (result *UnifiedOrderRe
 }
 
 // OrderQuery https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_2
-func (this *WXPay) OrderQuery(param OrderQueryParam) (result *OrderQueryResp, err error) {
+func (this *Client) OrderQuery(param OrderQueryParam) (result *OrderQueryRsp, err error) {
 	if err = this.doRequest("POST", this.BuildAPI(kOrderQuery), param, &result); err != nil {
 		return nil, err
 	}
@@ -33,7 +33,7 @@ func (this *WXPay) OrderQuery(param OrderQueryParam) (result *OrderQueryResp, er
 }
 
 // CloseOrder https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_3
-func (this *WXPay) CloseOrder(param CloseOrderParam) (result *CloseOrderResp, err error) {
+func (this *Client) CloseOrder(param CloseOrderParam) (result *CloseOrderRsp, err error) {
 	if err = this.doRequest("POST", this.BuildAPI(kCloseOrder), param, &result); err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ var (
 )
 
 // DownloadBill https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
-func (this *WXPay) DownloadBill(param DownloadBillParam) (result *DownloadBillResp, err error) {
+func (this *Client) DownloadBill(param DownloadBillParam) (result *DownloadBillRsp, err error) {
 	key, err := this.getKey()
 	if err != nil {
 		return nil, err
@@ -92,7 +92,7 @@ func (this *WXPay) DownloadBill(param DownloadBillParam) (result *DownloadBillRe
 			}
 		}
 
-		result = &DownloadBillResp{}
+		result = &DownloadBillRsp{}
 		result.ReturnCode = K_RETURN_CODE_SUCCESS
 		result.ReturnMsg = "ok"
 		result.Data = data

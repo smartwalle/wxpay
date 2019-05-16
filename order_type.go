@@ -90,7 +90,7 @@ func (this UnifiedOrderParam) Params() url.Values {
 	return m
 }
 
-type UnifiedOrderResp struct {
+type UnifiedOrderRsp struct {
 	ReturnCode string `xml:"return_code"`
 	ReturnMsg  string `xml:"return_msg"`
 	AppId      string `xml:"appid"`
@@ -121,7 +121,7 @@ func (this OrderQueryParam) Params() url.Values {
 	return m
 }
 
-type OrderQueryResp struct {
+type OrderQueryRsp struct {
 	ReturnCode string `xml:"return_code"`
 	ReturnMsg  string `xml:"return_msg"`
 	AppId      string `xml:"appid"`
@@ -164,7 +164,7 @@ func (this CloseOrderParam) Params() url.Values {
 	return m
 }
 
-type CloseOrderResp struct {
+type CloseOrderRsp struct {
 	ReturnCode string `xml:"return_code"`
 	ReturnMsg  string `xml:"return_msg"`
 	AppId      string `xml:"appid"`
@@ -193,7 +193,7 @@ func (this DownloadBillParam) Params() url.Values {
 	return m
 }
 
-type DownloadBillResp struct {
+type DownloadBillRsp struct {
 	ReturnCode string `xml:"return_code"`
 	ReturnMsg  string `xml:"return_msg"`
 	Data       []byte `xml:"-"`

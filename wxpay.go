@@ -18,7 +18,7 @@ import (
 	"time"
 )
 
-type WXPay struct {
+type Client struct {
 	appId        string
 	apiKey       string
 	mchId        string
@@ -29,8 +29,8 @@ type WXPay struct {
 	isProduction bool
 }
 
-func New(appId, apiKey, mchId string, isProduction bool) (client *WXPay) {
-	client = &WXPay{}
+func New(appId, apiKey, mchId string, isProduction bool) (client *Client) {
+	client = &Client{}
 	client.appId = appId
 	client.mchId = mchId
 	client.apiKey = apiKey
@@ -66,7 +66,7 @@ func initTLSClient(cert []byte, password string) (tlsClient *http.Client, err er
 	return tlsClient, err
 }
 
-func (this *WXPay) LoadCert(path string) (err error) {
+func (this *Client) LoadCert(path string) (err error) {
 	if len(path) == 0 {
 		return ErrNotFoundCertFile
 	}
@@ -84,7 +84,7 @@ func (this *WXPay) LoadCert(path string) (err error) {
 	return nil
 }
 
-func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, err error) {
+func (this *Client) URLValues(param Param, key string) (value url.Values, err error) {
 	var p = param.Params()
 	p.Set("appid", this.appId)
 	p.Set("mch_id", this.mchId)
@@ -101,11 +101,11 @@ func (this *WXPay) URLValues(param WXPayParam, key string) (value url.Values, er
 	return p, nil
 }
 
-func (this *WXPay) doRequest(method, url string, param WXPayParam, result interface{}) (err error) {
+func (this *Client) doRequest(method, url string, param Param, result interface{}) (err error) {
 	return this.doRequestWithClient(this.Client, method, url, param, result)
 }
 
-func (this *WXPay) doRequestWithTLS(method, url string, param WXPayParam, result interface{}) (err error) {
+func (this *Client) doRequestWithTLS(method, url string, param Param, result interface{}) (err error) {
 	if this.tlsClient == nil {
 		return ErrNotFoundTLSClient
 	}
@@ -113,7 +113,7 @@ func (this *WXPay) doRequestWithTLS(method, url string, param WXPayParam, result
 	return this.doRequestWithClient(this.tlsClient, method, url, param, result)
 }
 
-func (this *WXPay) doRequestWithClient(client *http.Client, method, url string, param WXPayParam, result interface{}) (err error) {
+func (this *Client) doRequestWithClient(client *http.Client, method, url string, param Param, result interface{}) (err error) {
 	key, err := this.getKey()
 	if err != nil {
 		return err
@@ -153,11 +153,11 @@ func (this *WXPay) doRequestWithClient(client *http.Client, method, url string, 
 	return err
 }
 
-func (this *WXPay) DoRequest(method, url string, param WXPayParam, results interface{}) (err error) {
+func (this *Client) DoRequest(method, url string, param Param, results interface{}) (err error) {
 	return this.doRequest(method, url, param, results)
 }
 
-func (this *WXPay) getKey() (key string, err error) {
+func (this *Client) getKey() (key string, err error) {
 	if this.isProduction == false {
 		key, err = this.getSignKey(this.apiKey)
 		if err != nil {
@@ -169,11 +169,11 @@ func (this *WXPay) getKey() (key string, err error) {
 	return key, err
 }
 
-func (this *WXPay) SignMD5(param url.Values) (sign string) {
+func (this *Client) SignMD5(param url.Values) (sign string) {
 	return SignMD5(param, this.apiKey)
 }
 
-func (this *WXPay) getSignKey(apiKey string) (key string, err error) {
+func (this *Client) getSignKey(apiKey string) (key string, err error) {
 	var p = make(url.Values)
 	p.Set("mch_id", this.mchId)
 	p.Set("nonce_str", getNonceStr())
@@ -200,14 +200,14 @@ func (this *WXPay) getSignKey(apiKey string) (key string, err error) {
 	if err != nil {
 		return "", err
 	}
-	var signKey *GetSignKeyResp
+	var signKey *GetSignKeyRsp
 	if err = xml.Unmarshal(data, &signKey); err != nil {
 		return "", err
 	}
 	return signKey.SandboxSignKey, nil
 }
 
-func (this *WXPay) BuildAPI(paths ...string) string {
+func (this *Client) BuildAPI(paths ...string) string {
 	var path = this.apiDomain
 	for _, p := range paths {
 		p = strings.TrimSpace(p)
