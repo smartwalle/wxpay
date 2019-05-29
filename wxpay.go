@@ -275,6 +275,9 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 	var code = param.Get("return_code")
 	if code == K_RETURN_CODE_FAIL {
 		var msg = param.Get("return_msg")
+		if msg == "" {
+			msg = param.Get("retmsg")
+		}
 		return false, errors.New(msg)
 	}
 
