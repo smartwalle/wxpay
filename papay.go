@@ -16,6 +16,24 @@ func (client *Client) EntrustWeb(param EntrustWebParam) (result *EntrustWebRespo
 	return result, err
 }
 
+//签约申请扣款
+//docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_3&index=8
+func (client *Client) PapPayApply(param PapPayApplyParam) (result *PapPayApplyResponse, err error) {
+	if err = client.doRequest("POST", client.BuildAPI(kPapPayApply), param, &result); err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
+//签约申请解约
+//docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_4&index=9
+func (client *Client) DeleteContract(param DeleteContractParam) (result *DeleteContractResponse, err error) {
+	if err = client.doRequest("POST", client.BuildAPI(kDeleteContract), param, &result); err != nil {
+		return nil, err
+	}
+	return result, err
+}
+
 //h5签约
 //docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_16&index=4
 func (client *Client) H5EntrustWeb() {
