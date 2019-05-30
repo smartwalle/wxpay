@@ -68,8 +68,8 @@ type EntrustWebResponse struct {
 //支付签约
 //docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_13&index=5
 type ContratOrderParam struct {
-	ContractMchid          string //签约商户号，必须与mch_id一致
-	ContractAppid          string //签约公众号，必须与appid一致
+	ContractMchId          string //签约商户号，必须与mch_id一致
+	ContractAppId          string //签约公众号，必须与appid一致
 	OutTradeNo             string //商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
 	DeviceInfo             string //终端设备号(门店号或收银设备ID)，注意：PC网页或公众号内支付请传"WEB"
 	Body                   string //商品或支付单简要描述
