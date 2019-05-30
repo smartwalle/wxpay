@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	kEntrustWeb     = "/papay/entrustweb"     //申请签约
+	kEntrustWeb     = "/papay/entrustweb"     //公众号申请签约
+	kContratOrder   = "/pay/contractorder"    //支付中签约
 	kPapPayApply    = "/pay/pappayapply"      //签约申请扣款
 	kDeleteContract = "/papay/deletecontract" //申请解约
 )
@@ -62,6 +63,88 @@ type EntrustWebResponse struct {
 	ContractExpiredTime     string `xml:"contract_expired_time"`
 	ContractTerminationMode int    `xml:"contract_termination_mode"`
 	RequestSerial           int64  `xml:"request_serial"`
+}
+
+//支付签约
+//docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_13&index=5
+type ContratOrderParam struct {
+	ContractMchid          string //签约商户号，必须与mch_id一致
+	ContractAppid          string //签约公众号，必须与appid一致
+	OutTradeNo             string //商户系统内部的订单号,32个字符内、可包含字母, 其他说明见商户订单号
+	DeviceInfo             string //终端设备号(门店号或收银设备ID)，注意：PC网页或公众号内支付请传"WEB"
+	Body                   string //商品或支付单简要描述
+	Detail                 string //商品名称明细列表
+	Attach                 string //附加数据,在查询API和支付通知中原样返回,该字段主要用于商户携带订单的自定义数据
+	NotifyUrl              string //支付回调通知的url
+	TotalFee               int    //订单总金额，单位为分
+	SpbillCreateIp         string //APP和网页支付提交用户端ip,Native支付填调用微信支付API的机器IP.
+	TimeStart              string //订单生成时间,格式为yyyyMMddHHmmss,如2009年12月25日9点10分10秒表示为20091225091010. 其他详见时间规则
+	TimeExpire             string //订单失效时间,格式为yyyyMMddHHmmss,如2009年12月27日9点10分10秒表示为20091227091010. 其他详见时间规则 注意：最短失效时间间隔必须大于5分钟
+	GoodsTag               string //商品标记,代金券或立减优惠功能的参数
+	TradeType              string //取值如下：JSAPI,NATIVE,APP,MWEB
+	ProductId              string //trade_type=NATIVE,此参数必传. 此id为二维码中包含的商品ID,商户自行定义.
+	LimitPay               string //no_credit--指定不能使用信用卡支付
+	OpenId                 string //trade_type=JSAPI,此参数必传，用户在商户appid下的唯一标识.
+	PlanId                 int    //协议模板id
+	ContractCode           string //签约协议号
+	RequestSerial          int64  //商户请求签约时的序列号，要求唯一性。序列号主要用于排序，不作为查询条件，纯数字,范围不能超过Int64的范围（9223372036854775807）。
+	ContractDisplayAccount string //签约用户的名称,用于页面展示，参数值不支持UTF8非3字节编码的字符，例如表情符号，所以请勿传微信昵称到该字段
+	ContractNotifyUrl      string //签约信息回调通知的url
+}
+
+type ContratOrderResponse struct {
+	ReturnCode string //SUCCESS/FAIL 此字段是通信标识,非交易标识,交易是否成功需要查看result_code来判断.
+	ReturnMsg  string //返回信息,如非空,为错误原因 /签名失败/参数格式校验错误
+
+	//以下字段在return_code为SUCCESS的时候返回
+	ResultCode         string //SUCCESS/FAIL
+	AppId              string // appid是商户在微信申请公众号或移动应用成功后分配的帐号ID，登录平台为mp.weixin.qq.com或open.weixin.qq.com
+	MchId              string //商户号是商户在微信申请微信支付成功后分配的帐号ID，登录平台为pay.weixin.qq.com
+	NonceStr           string //随机字符串,不长于32位.
+	Sign               string //签名规则详见签名生成算法 注：所有参数都是encode前做签名.
+	ErrCode            string //错误返回的错误代码
+	ErrCodeDes         string //错误返回的信息描述
+	ContractResultCode string //预签约结果
+	ContractErrCode    string //预签约错误代码
+	ContractErrCodeDes string //预签约错误描述
+
+	//以下字段在return_code 和result_code都为SUCCESS的时候有返回
+	PrepayId               string //微信生成的预支付回话标识,用于后续接口调用中使用,该值有效期为2小时.
+	TradeType              string //调用接口提交的交易类型，取值如下：JSAPI,NATIVE,APP
+	CodeUrl                string //trade_type为NATIVE是有返回,可将该参数值生成二维码展示出来进行扫码支付
+	PlanId                 int    // 商户在微信商户平台设置的代扣协议模板id
+	RequestSerial          uint64 //商户请求签约时的序列号,商户侧须唯一
+	ContractCode           string //商户请求签约时传入的签约协议号,商户侧须唯一
+	ContractDisplayAccount string //签约用户的名称,用于页面展示
+	MwebUrl                string //mweb_url为拉起微信支付收银台的中间页面，可通过访问该url来拉起微信客户端，完成支付,mweb_url的有效期为5分钟
+	OutTradeNo             string //商户订单号
+}
+
+func (contratOrder ContratOrderParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("contract_mchid", contratOrder.ContractMchid)
+	m.Set("contract_appid", contratOrder.ContractAppid)
+	m.Set("out_trade_no", contratOrder.OutTradeNo)
+	m.Set("device_info", contratOrder.DeviceInfo)
+	m.Set("body", contratOrder.Body)
+	m.Set("detail", contratOrder.Detail)
+	m.Set("attach", contratOrder.Attach)
+	m.Set("notify_url", contratOrder.NotifyUrl)
+	m.Set("total_fee", fmt.Sprintf("%d", contratOrder.TotalFee))
+	m.Set("spbill_create_ip", contratOrder.SpbillCreateIp)
+	m.Set("time_start", contratOrder.TimeStart)
+	m.Set("time_expire", contratOrder.TimeExpire)
+	m.Set("goods_tag", contratOrder.GoodsTag)
+	m.Set("trade_type", contratOrder.TradeType)
+	m.Set("product_id", contratOrder.ProductId)
+	m.Set("limit_pay", contratOrder.LimitPay)
+	m.Set("openid", contratOrder.OpenId)
+	m.Set("plan_id", fmt.Sprintf("%d", contratOrder.PlanId))
+	m.Set("contract_code", contratOrder.ContractCode)
+	m.Set("request_serial", fmt.Sprintf("%d", contratOrder.RequestSerial))
+	m.Set("contract_display_account", contratOrder.ContractDisplayAccount)
+	m.Set("contract_notify_url", contratOrder.ContractNotifyUrl)
+	return m
 }
 
 //签约申请扣款
