@@ -19,6 +19,10 @@ const (
 	kDeleteContract = "/papay/deletecontract" //申请解约
 )
 
+const (
+	kTradeTypePap = "PAP"
+)
+
 //公众号签约
 //docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_1&index=1
 type EntrustWebParam struct {
@@ -122,8 +126,8 @@ type ContratOrderResponse struct {
 
 func (contratOrder ContratOrderParam) Params() url.Values {
 	var m = make(url.Values)
-	m.Set("contract_mchid", contratOrder.ContractMchid)
-	m.Set("contract_appid", contratOrder.ContractAppid)
+	m.Set("contract_mchid", contratOrder.ContractMchId)
+	m.Set("contract_appid", contratOrder.ContractAppId)
 	m.Set("out_trade_no", contratOrder.OutTradeNo)
 	m.Set("device_info", contratOrder.DeviceInfo)
 	m.Set("body", contratOrder.Body)
