@@ -20,7 +20,7 @@ const (
 )
 
 const (
-	kTradeTypePap = "PAP"
+	K_TRADETYPE_PAP = "PAP"
 )
 
 //公众号签约
