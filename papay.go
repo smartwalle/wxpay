@@ -18,8 +18,11 @@ func (client *Client) EntrustWeb(param EntrustWebParam) (result *EntrustWebRespo
 
 //h5签约
 //docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_16&index=4
-func (client *Client) H5EntrustWeb() {
-
+func (client *Client) H5EntrustWeb(param H5EntrustWebParam) (result *H5EntrustWebRsponse, err error) {
+	if err = client.doRequest("GET", client.BuildAPI(kH5EntrustWeb), param, &result); err != nil {
+		return nil, err
+	}
+	return result, err
 }
 
 //支付签约

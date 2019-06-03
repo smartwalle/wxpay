@@ -14,6 +14,7 @@ import (
 
 const (
 	kEntrustWeb     = "/papay/entrustweb"     //公众号申请签约
+	kH5EntrustWeb   = "/papay/h5entrustweb"   //H5纯签约
 	kContratOrder   = "/pay/contractorder"    //支付中签约
 	kPapPayApply    = "/pay/pappayapply"      //签约申请扣款
 	kDeleteContract = "/papay/deletecontract" //申请解约
@@ -237,4 +238,42 @@ type DeleteContractResponse struct {
 	ErrCode      string `xml:"err_code"`      //错误码
 	ErrCodeDes   string `xml:"err_code_des"`  //错误码描述
 	Sign         string `xml:"sign"`          //签名
+}
+
+//请求参数
+//H5纯签约
+//docs: https://pay.weixin.qq.com/wiki/doc/api/pap.php?chapter=18_16&index=4
+type H5EntrustWebParam struct {
+	PlanId                 string //协议模板id
+	ContractCode           string //签约协议号
+	RequestSerial          int64  //商户请求签约时的序列号，要求唯一性。序列号主要用于排序，不作为查询条件
+	ContractDisplayAccount string //签约用户的名称，用于页面展示
+	NotifyUrl              string //回调通知的url,传输需要url encode
+	Version                string //固定值1.0
+	Timestamp              string //系统当前时间，定义规则详见时间戳
+	Clientip               string //用户客户端的真实IP地址
+	ReturnAppid            string //当指定该字段时，且商户模版标注商户具有指定返回app的权限时，签约成功将返回return_appid指定的app应用，如果不填且签约发起时的浏览器UA可被微信识别，则跳转到浏览器，否则留在微信
+}
+
+func (h5EntrustWebParam H5EntrustWebParam) Params() url.Values {
+	var m = make(url.Values)
+	m.Set("plan_id", h5EntrustWebParam.PlanId)
+	m.Set("contract_code", h5EntrustWebParam.ContractCode)
+	m.Set("request_serial", fmt.Sprintf("%d", h5EntrustWebParam.RequestSerial))
+	m.Set("contract_display_account", h5EntrustWebParam.ContractDisplayAccount)
+	m.Set("notify_url", h5EntrustWebParam.NotifyUrl)
+	m.Set("timestamp", h5EntrustWebParam.Timestamp)
+	m.Set("clientip", h5EntrustWebParam.Clientip)
+	m.Set("return_appid", h5EntrustWebParam.ReturnAppid)
+	m.Set("version", "1.0")
+	return m
+}
+
+//返回参数
+type H5EntrustWebRsponse struct {
+	ReturnCode  string `xml:"return_code"`  //SUCCESS/FAIL 此字段是通信标识，非交易标识，交易是否成功需要查看result_code来判断
+	ReturnMsg   string `xml:"return_msg"`   //返回信息，如非空，为错误原因 签名失败 参数格式校验错误
+	ResultCode  string `xml:"result_code"`  //业务结果
+	ResultMsg   string `xml:"result_msg"`   //如非空，为错误原因，如签名错误
+	RedirectUrl string `xml:"redirect_url"` //跳转签约页面url，用户通过跳转访问此URL即可进入微信签约页面，进行签约。注意这里请求跳转url的页面地址必须在微信后台配置（申请H5签约权限时配置）。
 }
