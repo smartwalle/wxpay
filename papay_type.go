@@ -97,31 +97,31 @@ type ContratOrderParam struct {
 }
 
 type ContratOrderResponse struct {
-	ReturnCode string //SUCCESS/FAIL 此字段是通信标识,非交易标识,交易是否成功需要查看result_code来判断.
-	ReturnMsg  string //返回信息,如非空,为错误原因 /签名失败/参数格式校验错误
+	ReturnCode string `xml:"return_code"` //SUCCESS/FAIL 此字段是通信标识,非交易标识,交易是否成功需要查看result_code来判断.
+	ReturnMsg  string `xml:"return_msg"`  //返回信息,如非空,为错误原因 /签名失败/参数格式校验错误
 
 	//以下字段在return_code为SUCCESS的时候返回
-	ResultCode         string //SUCCESS/FAIL
-	AppId              string // appid是商户在微信申请公众号或移动应用成功后分配的帐号ID，登录平台为mp.weixin.qq.com或open.weixin.qq.com
-	MchId              string //商户号是商户在微信申请微信支付成功后分配的帐号ID，登录平台为pay.weixin.qq.com
-	NonceStr           string //随机字符串,不长于32位.
-	Sign               string //签名规则详见签名生成算法 注：所有参数都是encode前做签名.
-	ErrCode            string //错误返回的错误代码
-	ErrCodeDes         string //错误返回的信息描述
-	ContractResultCode string //预签约结果
-	ContractErrCode    string //预签约错误代码
-	ContractErrCodeDes string //预签约错误描述
+	ResultCode         string `xml:"result_code"`           //SUCCESS/FAIL
+	AppId              string `xml:"app_id"`                // appid是商户在微信申请公众号或移动应用成功后分配的帐号ID，登录平台为mp.weixin.qq.com或open.weixin.qq.com
+	MchId              string `xml:"mch_id"`                //商户号是商户在微信申请微信支付成功后分配的帐号ID，登录平台为pay.weixin.qq.com
+	NonceStr           string `xml:"nonce_str"`             //随机字符串,不长于32位.
+	Sign               string `xml:"sign"`                  //签名规则详见签名生成算法 注：所有参数都是encode前做签名.
+	ErrCode            string `xml:"err_code"`              //错误返回的错误代码
+	ErrCodeDes         string `xml:"err_code_des"`          //错误返回的信息描述
+	ContractResultCode string `xml:"contract_result_code"`  //预签约结果
+	ContractErrCode    string `xml:"contract_err_code"`     //预签约错误代码
+	ContractErrCodeDes string `xml:"contract_err_code_des"` //预签约错误描述
 
 	//以下字段在return_code 和result_code都为SUCCESS的时候有返回
-	PrepayId               string //微信生成的预支付回话标识,用于后续接口调用中使用,该值有效期为2小时.
-	TradeType              string //调用接口提交的交易类型，取值如下：JSAPI,NATIVE,APP
-	CodeUrl                string //trade_type为NATIVE是有返回,可将该参数值生成二维码展示出来进行扫码支付
-	PlanId                 int    // 商户在微信商户平台设置的代扣协议模板id
-	RequestSerial          uint64 //商户请求签约时的序列号,商户侧须唯一
-	ContractCode           string //商户请求签约时传入的签约协议号,商户侧须唯一
-	ContractDisplayAccount string //签约用户的名称,用于页面展示
-	MwebUrl                string //mweb_url为拉起微信支付收银台的中间页面，可通过访问该url来拉起微信客户端，完成支付,mweb_url的有效期为5分钟
-	OutTradeNo             string //商户订单号
+	PrepayId               string `xml:"prepay_id"`                //微信生成的预支付回话标识,用于后续接口调用中使用,该值有效期为2小时.
+	TradeType              string `xml:"trade_type"`               //调用接口提交的交易类型，取值如下：JSAPI,NATIVE,APP
+	CodeUrl                string `xml:"code_url"`                 //trade_type为NATIVE是有返回,可将该参数值生成二维码展示出来进行扫码支付
+	PlanId                 int    `xml:"plan_id"`                  // 商户在微信商户平台设置的代扣协议模板id
+	RequestSerial          uint64 `xml:"request_serial"`           //商户请求签约时的序列号,商户侧须唯一
+	ContractCode           string `xml:"contract_code"`            //商户请求签约时传入的签约协议号,商户侧须唯一
+	ContractDisplayAccount string `xml:"contract_display_account"` //签约用户的名称,用于页面展示
+	MwebUrl                string `xml:"mweb_url"`                 //mweb_url为拉起微信支付收银台的中间页面，可通过访问该url来拉起微信客户端，完成支付,mweb_url的有效期为5分钟
+	OutTradeNo             string `xml:"out_trade_no"`             //商户订单号
 }
 
 func (contratOrder ContratOrderParam) Params() url.Values {
