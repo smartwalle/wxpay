@@ -8,7 +8,6 @@ import (
 	"encoding/pem"
 	"encoding/xml"
 	"errors"
-	"golang.org/x/crypto/pkcs12"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -16,6 +15,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/pkcs12"
 )
 
 type Client struct {
@@ -124,7 +125,7 @@ func (this *Client) doRequestWithClient(client *http.Client, method, url string,
 		return err
 	}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(urlValueToXML(p)))
+	req, err := http.NewRequest(method, url, strings.NewReader(UrlValueToXML(p)))
 	if err != nil {
 		return err
 	}
@@ -181,7 +182,7 @@ func (this *Client) getSignKey(apiKey string) (key string, err error) {
 	var sign = SignMD5(p, apiKey)
 	p.Set("sign", sign)
 
-	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(urlValueToXML(p)))
+	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(UrlValueToXML(p)))
 	if err != nil {
 		return "", err
 	}
@@ -226,7 +227,7 @@ func (this *Client) BuildAPI(paths ...string) string {
 	return path
 }
 
-func urlValueToXML(m url.Values) string {
+func UrlValueToXML(m url.Values) string {
 	var xmlBuffer = &bytes.Buffer{}
 	xmlBuffer.WriteString("<xml>")
 
