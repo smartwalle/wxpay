@@ -8,7 +8,6 @@ import (
 	"encoding/pem"
 	"encoding/xml"
 	"errors"
-	"golang.org/x/crypto/pkcs12"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -16,6 +15,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/pkcs12"
 )
 
 type Client struct {
