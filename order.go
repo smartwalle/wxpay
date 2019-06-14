@@ -56,7 +56,7 @@ func (this *Client) DownloadBill(param DownloadBillParam) (result *DownloadBillR
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", this.BuildAPI(kDownloadBill), strings.NewReader(urlValueToXML(p)))
+	req, err := http.NewRequest("POST", this.BuildAPI(kDownloadBill), strings.NewReader(URLValueToXML(p)))
 	if err != nil {
 		return nil, err
 	}

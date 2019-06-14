@@ -124,7 +124,7 @@ func (this *Client) doRequestWithClient(client *http.Client, method, url string,
 		return err
 	}
 
-	req, err := http.NewRequest(method, url, strings.NewReader(urlValueToXML(p)))
+	req, err := http.NewRequest(method, url, strings.NewReader(URLValueToXML(p)))
 	if err != nil {
 		return err
 	}
@@ -181,7 +181,7 @@ func (this *Client) getSignKey(apiKey string) (key string, err error) {
 	var sign = SignMD5(p, apiKey)
 	p.Set("sign", sign)
 
-	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(urlValueToXML(p)))
+	req, err := http.NewRequest("POST", "https://api.mch.weixin.qq.com/sandboxnew/pay/getsignkey", strings.NewReader(URLValueToXML(p)))
 	if err != nil {
 		return "", err
 	}
@@ -226,13 +226,13 @@ func (this *Client) BuildAPI(paths ...string) string {
 	return path
 }
 
-func urlValueToXML(m url.Values) string {
+func URLValueToXML(m url.Values) string {
 	var xmlBuffer = &bytes.Buffer{}
 	xmlBuffer.WriteString("<xml>")
 
 	for key := range m {
 		var value = m.Get(key)
-		if key == "total_fee" || key == "refund_fee" || key == "execute_time_" {
+		if key == "total_fee" || key == "refund_fee" || key == "execute_time" {
 			xmlBuffer.WriteString("<" + key + ">" + value + "</" + key + ">")
 		} else {
 			xmlBuffer.WriteString("<" + key + "><![CDATA[" + value + "]]></" + key + ">")

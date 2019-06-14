@@ -44,5 +44,5 @@ func AckNotification(w http.ResponseWriter) {
 	v.Set("return_msg", "OK")
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte(urlValueToXML(v)))
+	w.Write([]byte(URLValueToXML(v)))
 }
