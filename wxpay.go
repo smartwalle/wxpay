@@ -89,7 +89,7 @@ func (this *Client) URLValues(param Param, key string) (value url.Values, err er
 	var p = param.Params()
 	p.Set("appid", this.appId)
 	p.Set("mch_id", this.mchId)
-	p.Set("nonce_str", getNonceStr())
+	p.Set("nonce_str", GetNonceStr())
 
 	if _, ok := p["notify_url"]; ok == false {
 		if len(this.NotifyURL) > 0 {
@@ -177,7 +177,7 @@ func (this *Client) SignMD5(param url.Values) (sign string) {
 func (this *Client) getSignKey(apiKey string) (key string, err error) {
 	var p = make(url.Values)
 	p.Set("mch_id", this.mchId)
-	p.Set("nonce_str", getNonceStr())
+	p.Set("nonce_str", GetNonceStr())
 
 	var sign = SignMD5(p, apiKey)
 	p.Set("sign", sign)
@@ -306,7 +306,7 @@ func VerifyResponseValues(param url.Values, key string) (bool, error) {
 	return false, errors.New("签名验证失败")
 }
 
-func getNonceStr() (nonceStr string) {
+func GetNonceStr() (nonceStr string) {
 	chars := "abcdefghijklmnopqrstuvwxyz0123456789"
 	var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < 32; i++ {
