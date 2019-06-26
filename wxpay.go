@@ -265,7 +265,6 @@ func SignMD5(param url.Values, key string) (sign string) {
 	return sign
 }
 
-// VerifyResponseData VerifyResponseData
 func VerifyResponseData(data []byte, key string) (ok bool, err error) {
 	var param = make(XMLMap)
 	err = xml.Unmarshal(data, &param)
@@ -276,7 +275,6 @@ func VerifyResponseData(data []byte, key string) (ok bool, err error) {
 	return VerifyResponseValues(url.Values(param), key)
 }
 
-// VerifyResponseValues VerifyResponseValues
 func VerifyResponseValues(param url.Values, key string) (bool, error) {
 	// 处理错误信息
 	var code = param.Get("return_code")
