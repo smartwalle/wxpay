@@ -24,7 +24,7 @@ func GetTradeNotification(req *http.Request, key string) (noti *TradeNotificatio
 
 	var data, _ = ioutil.ReadAll(req.Body)
 
-	if _, err := verifyResponseData(data, key); err != nil {
+	if _, err := VerifyResponseData(data, key); err != nil {
 		return nil, err
 	}
 
