@@ -105,6 +105,19 @@ type UnifiedOrderRsp struct {
 	TradeType  string `xml:"trade_type"`
 	CodeURL    string `xml:"code_url"`
 	MWebURL    string `xml:"mweb_url"`
+
+	// 当 TradeType 为 APP 的时候，会返回此数据
+	AppPayInfo *AppPayInfo `xml:"-"`
+}
+
+type AppPayInfo struct {
+	AppId     string `json:"app_id"`
+	PartnerId string `json:"partner_id"`
+	PrepayId  string `json:"prepay_id"`
+	Package   string `json:"package"`
+	NonceStr  string `json:"nonce_str"`
+	TimeStamp string `json:"timestamp"`
+	Sign      string `json:"sign"`
 }
 
 ////////////////////////////////////////////////////////////////////////////////

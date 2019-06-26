@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
+	"time"
 )
 
 const (
@@ -21,6 +24,28 @@ func (this *Client) UnifiedOrder(param UnifiedOrderParam) (result *UnifiedOrderR
 	if err = this.doRequest("POST", this.BuildAPI(kUnifiedOrder), param, &result); err != nil {
 		return nil, err
 	}
+
+	if strings.ToUpper(param.TradeType) == K_TRADE_TYPE_APP && result != nil && result.PrepayId != "" {
+		var info = &AppPayInfo{}
+		info.AppId = this.appId
+		info.PartnerId = this.mchId
+		info.PrepayId = result.PrepayId
+		info.Package = "Sign=WXPay"
+		info.NonceStr = GetNonceStr()
+		info.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
+
+		var p = url.Values{}
+		p.Set("appid", info.AppId)
+		p.Set("partnerid", info.PartnerId)
+		p.Set("prepayid", info.PrepayId)
+		p.Set("package", info.Package)
+		p.Set("noncestr", info.NonceStr)
+		p.Set("timestamp", info.TimeStamp)
+
+		info.Sign = SignMD5(p, this.apiKey)
+		result.AppPayInfo = info
+	}
+
 	return result, err
 }
 

@@ -9,16 +9,19 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	var p = UnifiedOrderParam{}
 	p.Body = "test product"
 	p.NotifyURL = "http://www.test.com"
-	p.TradeType = K_TRADE_TYPE_NATIVE
+	p.TradeType = K_TRADE_TYPE_APP
 	p.SpbillCreateIP = "202.105.107.18"
 	p.TotalFee = 101
-	p.OutTradeNo = "test-111111122sdf"
+	p.OutTradeNo = "test-111111125"
 
 	result, err := client.UnifiedOrder(p)
 	if err != nil {
 		t.Fatal(err)
 	}
 	t.Log(result.PrepayId, result.CodeURL)
+	if result.AppPayInfo != nil {
+		t.Log(result.AppPayInfo.Sign)
+	}
 }
 
 func TestWXPay_OrderQuery(t *testing.T) {
