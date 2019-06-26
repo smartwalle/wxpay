@@ -20,7 +20,14 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	}
 	t.Log(result.PrepayId, result.CodeURL)
 	if result.AppPayInfo != nil {
-		t.Log(result.AppPayInfo.Sign)
+		t.Log("以下为 TradeType 为 APP 时附加的信息")
+		t.Log("AppId", result.AppPayInfo.AppId)
+		t.Log("PartnerId", result.AppPayInfo.PartnerId)
+		t.Log("PrepayId", result.AppPayInfo.PrepayId)
+		t.Log("Package", result.AppPayInfo.Package)
+		t.Log("NonceStr", result.AppPayInfo.NonceStr)
+		t.Log("TimeStamp", result.AppPayInfo.TimeStamp)
+		t.Log("Sign", result.AppPayInfo.Sign)
 	}
 }
 
