@@ -8,7 +8,6 @@ import (
 	"encoding/pem"
 	"encoding/xml"
 	"errors"
-	"golang.org/x/crypto/pkcs12"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -16,6 +15,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"golang.org/x/crypto/pkcs12"
 )
 
 type Client struct {
@@ -144,7 +145,7 @@ func (this *Client) doRequestWithClient(client *http.Client, method, url string,
 		return err
 	}
 
-	if _, err := verifyResponseData(data, key); err != nil {
+	if _, err := VerifyResponseData(data, key); err != nil {
 		return err
 	}
 
@@ -264,13 +265,19 @@ func SignMD5(param url.Values, key string) (sign string) {
 	return sign
 }
 
-func verifyResponseData(data []byte, key string) (ok bool, err error) {
+// VerifyResponseData VerifyResponseData
+func VerifyResponseData(data []byte, key string) (ok bool, err error) {
 	var param = make(XMLMap)
 	err = xml.Unmarshal(data, &param)
 	if err != nil {
 		return false, err
 	}
 
+	return VerifyResponseValues(url.Values(param), key)
+}
+
+// VerifyResponseValues VerifyResponseValues
+func VerifyResponseValues(param url.Values, key string) (bool, error) {
 	// 处理错误信息
 	var code = param.Get("return_code")
 	if code == K_RETURN_CODE_FAIL {
@@ -294,7 +301,7 @@ func verifyResponseData(data []byte, key string) (ok bool, err error) {
 		return false, errors.New("签名验证失败")
 	}
 
-	var sign2 = SignMD5(url.Values(param), key)
+	var sign2 = SignMD5(param, key)
 	if sign == sign2 {
 		return true, nil
 	}
