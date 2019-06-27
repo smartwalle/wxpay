@@ -35,7 +35,7 @@ func (this *Client) AppPay(param UnifiedOrderParam) (result *PayInfo, err error)
 		return nil, err
 	}
 
-	if rsp != nil && rsp.PrepayId != "" {
+	if rsp != nil {
 		result = &PayInfo{}
 		result.AppId = this.appId
 		result.PartnerId = this.mchId
@@ -67,7 +67,7 @@ func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (r
 		return nil, err
 	}
 
-	if rsp != nil && rsp.PrepayId != "" {
+	if rsp != nil {
 		result = &PayInfo{}
 		result.AppId = publicAccountId
 		result.PartnerId = this.mchId
@@ -103,7 +103,7 @@ func (this *Client) WebPay(param UnifiedOrderParam) (result *WebPayInfo, err err
 		return nil, err
 	}
 
-	if rsp != nil && rsp.MWebURL != "" {
+	if rsp != nil {
 		result = &WebPayInfo{}
 		result.MWebURL = rsp.MWebURL
 		result.RawRsp = rsp
@@ -119,7 +119,7 @@ func (this *Client) NativePay(param UnifiedOrderParam) (result *NativePayInfo, e
 		return nil, err
 	}
 
-	if rsp != nil && rsp.CodeURL != "" {
+	if rsp != nil {
 		result = &NativePayInfo{}
 		result.CodeURL = rsp.CodeURL
 		result.RawRsp = rsp
