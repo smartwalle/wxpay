@@ -43,16 +43,16 @@ func (this *Client) AppPay(param UnifiedOrderParam) (result *PayInfo, err error)
 		result.Package = "Sign=WXPay"
 		result.NonceStr = GetNonceStr()
 		result.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
+		result.SignType = kSignTypeMD5
 
 		var p = url.Values{}
 		p.Set("appid", result.AppId)
+		p.Set("noncestr", result.NonceStr)
 		p.Set("partnerid", result.PartnerId)
 		p.Set("prepayid", result.PrepayId)
 		p.Set("package", result.Package)
-		p.Set("noncestr", result.NonceStr)
 		p.Set("timestamp", result.TimeStamp)
 
-		result.SignType = kSignTypeMD5
 		result.Sign = SignMD5(p, this.apiKey)
 		result.RawRsp = rsp
 	}
@@ -75,15 +75,15 @@ func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (r
 		result.Package = fmt.Sprintf("prepay_id=%s", rsp.PrepayId)
 		result.NonceStr = GetNonceStr()
 		result.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
+		result.SignType = kSignTypeMD5
 
 		var p = url.Values{}
 		p.Add("appId", result.AppId)
-		p.Add("timeStamp", result.TimeStamp)
 		p.Add("nonceStr", result.NonceStr)
 		p.Add("package", result.Package)
 		p.Add("signType", result.SignType)
+		p.Add("timeStamp", result.TimeStamp)
 
-		result.SignType = kSignTypeMD5
 		result.Sign = SignMD5(p, this.apiKey)
 		result.RawRsp = rsp
 	}
