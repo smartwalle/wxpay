@@ -119,7 +119,7 @@ func (this *Client) NativePay(param UnifiedOrderParam) (result *NativePayInfo, e
 		return nil, err
 	}
 
-	if rsp != nil && rsp.MWebURL != "" {
+	if rsp != nil && rsp.CodeURL != "" {
 		result = &NativePayInfo{}
 		result.CodeURL = rsp.CodeURL
 		result.RawRsp = rsp
