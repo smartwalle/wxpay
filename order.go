@@ -24,28 +24,106 @@ func (this *Client) UnifiedOrder(param UnifiedOrderParam) (result *UnifiedOrderR
 	if err = this.doRequest("POST", this.BuildAPI(kUnifiedOrder), param, &result); err != nil {
 		return nil, err
 	}
+	return result, err
+}
 
-	if strings.ToUpper(param.TradeType) == K_TRADE_TYPE_APP && result != nil && result.PrepayId != "" {
-		var info = &AppPayInfo{}
-		info.AppId = this.appId
-		info.PartnerId = this.mchId
-		info.PrepayId = result.PrepayId
-		info.Package = "Sign=WXPay"
-		info.NonceStr = GetNonceStr()
-		info.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
-
-		var p = url.Values{}
-		p.Set("appid", info.AppId)
-		p.Set("partnerid", info.PartnerId)
-		p.Set("prepayid", info.PrepayId)
-		p.Set("package", info.Package)
-		p.Set("noncestr", info.NonceStr)
-		p.Set("timestamp", info.TimeStamp)
-
-		info.Sign = SignMD5(p, this.apiKey)
-		result.AppPayInfo = info
+// AppPay APP 支付  https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2#
+func (this *Client) AppPay(param UnifiedOrderParam) (result *PayInfo, err error) {
+	param.TradeType = K_TRADE_TYPE_APP
+	rsp, err := this.UnifiedOrder(param)
+	if err != nil {
+		return nil, err
 	}
 
+	if rsp != nil && rsp.PrepayId != "" {
+		result = &PayInfo{}
+		result.AppId = this.appId
+		result.PartnerId = this.mchId
+		result.PrepayId = rsp.PrepayId
+		result.Package = "Sign=WXPay"
+		result.NonceStr = GetNonceStr()
+		result.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
+
+		var p = url.Values{}
+		p.Set("appid", result.AppId)
+		p.Set("partnerid", result.PartnerId)
+		p.Set("prepayid", result.PrepayId)
+		p.Set("package", result.Package)
+		p.Set("noncestr", result.NonceStr)
+		p.Set("timestamp", result.TimeStamp)
+
+		result.SignType = kSignTypeMD5
+		result.Sign = SignMD5(p, this.apiKey)
+		result.RawRsp = rsp
+	}
+	return result, err
+}
+
+// JSAPIPay 微信内H5调起支付-公众号支付 https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_7&index=6
+func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (result *PayInfo, err error) {
+	param.TradeType = K_TRADE_TYPE_JSAPI
+	rsp, err := this.UnifiedOrder(param)
+	if err != nil {
+		return nil, err
+	}
+
+	if rsp != nil && rsp.PrepayId != "" {
+		result = &PayInfo{}
+		result.AppId = publicAccountId
+		result.PartnerId = this.mchId
+		result.PrepayId = rsp.PrepayId
+		result.Package = fmt.Sprintf("prepay_id=%s", rsp.PrepayId)
+		result.NonceStr = GetNonceStr()
+		result.TimeStamp = fmt.Sprintf("%d", time.Now().Unix())
+
+		var p = url.Values{}
+		p.Add("appId", result.AppId)
+		p.Add("timeStamp", result.TimeStamp)
+		p.Add("nonceStr", result.NonceStr)
+		p.Add("package", result.Package)
+		p.Add("signType", result.SignType)
+
+		result.SignType = kSignTypeMD5
+		result.Sign = SignMD5(p, this.apiKey)
+		result.RawRsp = rsp
+	}
+	return result, err
+}
+
+// MiniAppPay 小程序支付 https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
+func (this *Client) MiniAppPay(miniAppId string, param UnifiedOrderParam) (result *PayInfo, err error) {
+	return this.JSAPIPay(miniAppId, param)
+}
+
+// WebPay H5 支付 https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_20&index=1
+func (this *Client) WebPay(param UnifiedOrderParam) (result *WebPayInfo, err error) {
+	param.TradeType = K_TRADE_TYPE_JSAPI
+	rsp, err := this.UnifiedOrder(param)
+	if err != nil {
+		return nil, err
+	}
+
+	if rsp != nil && rsp.MWebURL != "" {
+		result = &WebPayInfo{}
+		result.MWebURL = rsp.MWebURL
+		result.RawRsp = rsp
+	}
+	return result, err
+}
+
+// NativePay NATIVE 扫码支付 https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
+func (this *Client) NativePay(param UnifiedOrderParam) (result *NativePayInfo, err error) {
+	param.TradeType = K_TRADE_TYPE_JSAPI
+	rsp, err := this.UnifiedOrder(param)
+	if err != nil {
+		return nil, err
+	}
+
+	if rsp != nil && rsp.MWebURL != "" {
+		result = &NativePayInfo{}
+		result.CodeURL = rsp.CodeURL
+		result.RawRsp = rsp
+	}
 	return result, err
 }
 

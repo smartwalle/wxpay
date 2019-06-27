@@ -105,19 +105,34 @@ type UnifiedOrderRsp struct {
 	TradeType  string `xml:"trade_type"`
 	CodeURL    string `xml:"code_url"`
 	MWebURL    string `xml:"mweb_url"`
-
-	// 当 TradeType 为 APP 的时候，会返回此数据
-	AppPayInfo *AppPayInfo `xml:"-"`
 }
 
-type AppPayInfo struct {
-	AppId     string `json:"app_id"`
-	PartnerId string `json:"partner_id"`
-	PrepayId  string `json:"prepay_id"`
-	Package   string `json:"package"`
-	NonceStr  string `json:"nonce_str"`
-	TimeStamp string `json:"timestamp"`
-	Sign      string `json:"sign"`
+// 客户端唤起支付所需要的信息：App 支付、微信内H5调起支付(公众号支付)、小程序支付
+// App 支付 - https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2
+// 微信内H5调起支付 - https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_7&index=6
+// 小程序调起支付API - https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
+type PayInfo struct {
+	AppId     string           `json:"app_id"`
+	PartnerId string           `json:"partner_id"`
+	PrepayId  string           `json:"prepay_id"`
+	Package   string           `json:"package"`
+	NonceStr  string           `json:"nonce_str"`
+	TimeStamp string           `json:"timestamp"`
+	Sign      string           `json:"sign"`
+	SignType  string           `json:"sign_type"`
+	RawRsp    *UnifiedOrderRsp `json:"-"`
+}
+
+// WebPayInfo https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_20&index=1
+type WebPayInfo struct {
+	MWebURL string           `json:"mweb_url"`
+	RawRsp  *UnifiedOrderRsp `json:"-"`
+}
+
+// NativePayInfo https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
+type NativePayInfo struct {
+	CodeURL string           `json:"code_url"`
+	RawRsp  *UnifiedOrderRsp `json:"-"`
 }
 
 ////////////////////////////////////////////////////////////////////////////////
