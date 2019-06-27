@@ -97,7 +97,7 @@ func (this *Client) MiniAppPay(miniAppId string, param UnifiedOrderParam) (resul
 
 // WebPay H5 支付 https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_20&index=1
 func (this *Client) WebPay(param UnifiedOrderParam) (result *WebPayInfo, err error) {
-	param.TradeType = K_TRADE_TYPE_JSAPI
+	param.TradeType = K_TRADE_TYPE_MWEB
 	rsp, err := this.UnifiedOrder(param)
 	if err != nil {
 		return nil, err
@@ -113,7 +113,7 @@ func (this *Client) WebPay(param UnifiedOrderParam) (result *WebPayInfo, err err
 
 // NativePay NATIVE 扫码支付 https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=9_1
 func (this *Client) NativePay(param UnifiedOrderParam) (result *NativePayInfo, err error) {
-	param.TradeType = K_TRADE_TYPE_JSAPI
+	param.TradeType = K_TRADE_TYPE_NATIVE
 	rsp, err := this.UnifiedOrder(param)
 	if err != nil {
 		return nil, err
