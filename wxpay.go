@@ -87,7 +87,9 @@ func (this *Client) LoadCert(path string) (err error) {
 
 func (this *Client) URLValues(param Param, key string) (value url.Values, err error) {
 	var p = param.Params()
-	p.Set("appid", this.appId)
+	if _, ok := p["appid"]; ok == false {
+		p.Set("appid", this.appId)
+	}
 	p.Set("mch_id", this.mchId)
 	p.Set("nonce_str", GetNonceStr())
 

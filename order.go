@@ -37,7 +37,7 @@ func (this *Client) AppPay(param UnifiedOrderParam) (result *PayInfo, err error)
 
 	if rsp != nil {
 		result = &PayInfo{}
-		result.AppId = this.appId
+		result.AppId = param.AppId
 		result.PartnerId = this.mchId
 		result.PrepayId = rsp.PrepayId
 		result.Package = "Sign=WXPay"
@@ -60,7 +60,7 @@ func (this *Client) AppPay(param UnifiedOrderParam) (result *PayInfo, err error)
 }
 
 // JSAPIPay 微信内H5调起支付-公众号支付 https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_7&index=6
-func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (result *PayInfo, err error) {
+func (this *Client) JSAPIPay(param UnifiedOrderParam) (result *PayInfo, err error) {
 	param.TradeType = K_TRADE_TYPE_JSAPI
 	rsp, err := this.UnifiedOrder(param)
 	if err != nil {
@@ -69,7 +69,7 @@ func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (r
 
 	if rsp != nil {
 		result = &PayInfo{}
-		result.AppId = publicAccountId
+		result.AppId = param.AppId
 		result.PartnerId = this.mchId
 		result.PrepayId = rsp.PrepayId
 		result.Package = fmt.Sprintf("prepay_id=%s", rsp.PrepayId)
@@ -91,8 +91,8 @@ func (this *Client) JSAPIPay(publicAccountId string, param UnifiedOrderParam) (r
 }
 
 // MiniAppPay 小程序支付 https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
-func (this *Client) MiniAppPay(miniAppId string, param UnifiedOrderParam) (result *PayInfo, err error) {
-	return this.JSAPIPay(miniAppId, param)
+func (this *Client) MiniAppPay(param UnifiedOrderParam) (result *PayInfo, err error) {
+	return this.JSAPIPay(param)
 }
 
 // WebPay H5 支付 https://pay.weixin.qq.com/wiki/doc/api/H5.php?chapter=9_20&index=1

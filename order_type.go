@@ -26,6 +26,7 @@ const (
 ////////////////////////////////////////////////////////////////////////////////
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 type UnifiedOrderParam struct {
+	AppId          string // 是
 	NotifyURL      string // 是 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
 	Body           string // 是 商品简单描述，该字段请按照规范传递，具体请见参数规定
 	OutTradeNo     string // 是 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。详见商户订单号
@@ -56,6 +57,7 @@ type StoreInfo struct {
 
 func (this UnifiedOrderParam) Params() url.Values {
 	var m = make(url.Values)
+	m.Set("appid", this.AppId)
 	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
 		this.SignType = kSignTypeMD5
