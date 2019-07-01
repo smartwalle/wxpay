@@ -87,7 +87,7 @@ func (this *Client) LoadCert(path string) (err error) {
 
 func (this *Client) URLValues(param Param, key string) (value url.Values, err error) {
 	var p = param.Params()
-	if _, ok := p["appid"]; ok == false {
+	if appId := p.Get("appid"); appId == "" {
 		p.Set("appid", this.appId)
 	}
 	p.Set("mch_id", this.mchId)
