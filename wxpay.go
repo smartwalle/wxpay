@@ -156,8 +156,8 @@ func (this *Client) doRequestWithClient(client *http.Client, method, url string,
 	return err
 }
 
-func (this *Client) DoRequest(method, url string, param Param, results interface{}) (err error) {
-	return this.doRequest(method, url, param, results)
+func (this *Client) DoRequest(method, url string, param Param, result interface{}) (err error) {
+	return this.doRequest(method, url, param, result)
 }
 
 func (this *Client) getKey() (key string, err error) {
