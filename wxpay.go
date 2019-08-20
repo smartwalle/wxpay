@@ -35,7 +35,12 @@ func New(appId, apiKey, mchId string, isProduction bool) (client *Client) {
 	client.appId = appId
 	client.mchId = mchId
 	client.apiKey = apiKey
-	client.Client = http.DefaultClient
+	client.Client = &http.Client{
+		// 需指定此处跳过证书验证，否则可能出现默认证书无效无法调用情况
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		},
+	}
 	client.isProduction = isProduction
 	if isProduction {
 		client.apiDomain = kProductionURL
