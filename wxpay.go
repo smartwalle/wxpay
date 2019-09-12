@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/pem"
 	"encoding/xml"
@@ -78,6 +79,24 @@ func (this *Client) LoadCert(path string) (err error) {
 	}
 
 	tlsClient, err := initTLSClient(cert, this.mchId)
+	if err != nil {
+		return err
+	}
+	this.tlsClient = tlsClient
+	return nil
+}
+
+func (this *Client) LoadCertFromBase64(cert string) (err error) {
+	if len(cert) == 0 {
+		return ErrNotFoundCertFile
+	}
+
+	p12, err := base64.StdEncoding.DecodeString(cert)
+	if err != nil {
+		return err
+	}
+
+	tlsClient, err := initTLSClient(p12, this.mchId)
 	if err != nil {
 		return err
 	}
