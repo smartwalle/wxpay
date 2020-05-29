@@ -24,7 +24,7 @@ func (this RefundParam) Params() url.Values {
 	var m = make(url.Values)
 	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
-		this.SignType = kSignTypeMD5
+		this.SignType = SignTypeMD5
 	}
 	m.Set("sign_type", this.SignType)
 	if len(this.TransactionId) > 0 {

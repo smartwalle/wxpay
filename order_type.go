@@ -7,26 +7,25 @@ import (
 )
 
 const (
-	K_TRADE_TYPE_JSAPI  = "JSAPI"
-	K_TRADE_TYPE_NATIVE = "NATIVE"
-	K_TRADE_TYPE_APP    = "APP"
-	K_TRADE_TYPE_MWEB   = "MWEB"
+	TradeTypeJSAPI  = "JSAPI"
+	TradeTypeNative = "NATIVE"
+	TradeTypeApp    = "APP"
+	TradeTypeMWeb   = "MWEB"
 )
 
 const (
-	K_TRADE_STATE_SUCCESS    = "SUCCESS"    //支付成功
-	K_TRADE_STATE_REFUND     = "REFUND"     //转入退款
-	K_TRADE_STATE_NOTPAY     = "NOTPAY"     //未支付
-	K_TRADE_STATE_CLOSED     = "CLOSED"     //已关闭
-	K_TRADE_STATE_REVOKED    = "REVOKED"    //已撤销（刷卡支付）
-	K_TRADE_STATE_USERPAYING = "USERPAYING" //用户支付中
-	K_TRADE_STATE_PAYERROR   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
+	TradeStateSuccess    = "SUCCESS"    //支付成功
+	TradeStateRefund     = "REFUND"     //转入退款
+	TradeStateNotPay     = "NOTPAY"     //未支付
+	TradeStateClosed     = "CLOSED"     //已关闭
+	TradeStateRevoked    = "REVOKED"    //已撤销（刷卡支付）
+	TradeStateUserPaying = "USERPAYING" //用户支付中
+	TradeStatePayError   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
 )
 
 ////////////////////////////////////////////////////////////////////////////////
 // https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 type UnifiedOrderParam struct {
-	AppId          string // 是
 	NotifyURL      string // 是 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
 	Body           string // 是 商品简单描述，该字段请按照规范传递，具体请见参数规定
 	OutTradeNo     string // 是 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。详见商户订单号
@@ -57,10 +56,9 @@ type StoreInfo struct {
 
 func (this UnifiedOrderParam) Params() url.Values {
 	var m = make(url.Values)
-	m.Set("appid", this.AppId)
 	m.Set("notify_url", this.NotifyURL)
 	if len(this.SignType) == 0 {
-		this.SignType = kSignTypeMD5
+		this.SignType = SignTypeMD5
 	}
 	m.Set("sign_type", this.SignType)
 	m.Set("device_info", this.DeviceInfo)
@@ -75,12 +73,14 @@ func (this UnifiedOrderParam) Params() url.Values {
 	m.Set("time_expire", this.TimeExpire)
 	m.Set("goods_tag", this.GoodsTag)
 	if len(this.TradeType) == 0 {
-		this.TradeType = K_TRADE_TYPE_APP
+		this.TradeType = TradeTypeApp
 	}
 	m.Set("trade_type", this.TradeType)
 	m.Set("product_id", this.ProductId)
 	m.Set("limit_pay", this.LimitPay)
-	m.Set("openid", this.OpenId)
+	if this.OpenId != "" {
+		m.Set("openid", this.OpenId)
+	}
 
 	if this.StoreInfo != nil {
 		var storeInfoByte, err = json.Marshal(this.StoreInfo)

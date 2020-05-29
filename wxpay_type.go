@@ -13,12 +13,12 @@ const (
 )
 
 const (
-	K_RETURN_CODE_FAIL    = "FAIL"
-	K_RETURN_CODE_SUCCESS = "SUCCESS"
+	ReturnCodeFail    = "FAIL"
+	ReturnCodeSuccess = "SUCCESS"
 )
 
 const (
-	kSignTypeMD5 = "MD5"
+	SignTypeMD5 = "MD5"
 )
 
 var (

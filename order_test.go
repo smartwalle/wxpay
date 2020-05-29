@@ -9,7 +9,7 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	var p = UnifiedOrderParam{}
 	p.Body = "test product"
 	p.NotifyURL = "http://www.test.com"
-	p.TradeType = K_TRADE_TYPE_MWEB
+	p.TradeType = TradeTypeMWeb
 	p.SpbillCreateIP = "202.105.107.18"
 	p.TotalFee = 101
 	p.OutTradeNo = "test-111111125"
@@ -18,7 +18,29 @@ func TestWXPay_UnifiedOrder(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(result.PrepayId, result.CodeURL, result.MWebURL)
+	t.Log(result.PrepayId, result)
+}
+
+func TestWXPay_MiniAppPay(t *testing.T) {
+	t.Log("========== MiniAppPay ==========")
+	var p = UnifiedOrderParam{}
+	p.Body = "test product"
+	p.NotifyURL = "http://www.test.com"
+	p.SpbillCreateIP = "202.105.107.18"
+	p.TotalFee = 1
+	p.OutTradeNo = "test-1111111251"
+	p.OpenId = "o-wmv4nnpvU_yj0fvwu_jAX2s38w"
+
+	result, err := client.MiniAppPay(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	//t.Log(result.PrepayId, result)
+	t.Log("TimeStamp", result.TimeStamp)
+	t.Log("NonceStr", result.NonceStr)
+	t.Log("PrepayId", result.Package)
+	t.Log("SignType", result.SignType)
+	t.Log("Sign", result.Sign)
 }
 
 func TestWXPay_AppPay(t *testing.T) {
