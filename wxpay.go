@@ -124,31 +124,32 @@ func (this *Client) URLValues(param Param, key string) (value url.Values, err er
 }
 
 func (this *Client) doRequest(method, url string, param Param, result interface{}) (err error) {
-	return this.doRequestWithClient(this.Client, method, url, param, result)
+	_, err = this.doRequestWithClient(this.Client, method, url, param, result)
+	return err
 }
 
 func (this *Client) doRequestWithTLS(method, url string, param Param, result interface{}) (err error) {
 	if this.tlsClient == nil {
 		return ErrNotFoundTLSClient
 	}
-
-	return this.doRequestWithClient(this.tlsClient, method, url, param, result)
+	_, err = this.doRequestWithClient(this.tlsClient, method, url, param, result)
+	return err
 }
 
-func (this *Client) doRequestWithClient(client *http.Client, method, url string, param Param, result interface{}) (err error) {
+func (this *Client) doRequestWithClient(client *http.Client, method, url string, param Param, result interface{}) (body []byte, err error) {
 	key, err := this.getKey()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	p, err := this.URLValues(param, key)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	req, err := http.NewRequest(method, url, strings.NewReader(URLValueToXML(p)))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req.Header.Set("Accept", "application/xml")
 	req.Header.Set("Content-Type", "application/xml;charset=utf-8")
@@ -158,21 +159,21 @@ func (this *Client) doRequestWithClient(client *http.Client, method, url string,
 		defer resp.Body.Close()
 	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if _, err := VerifyResponseData(data, key); err != nil {
-		return err
+		return nil, err
 	}
 
 	err = xml.Unmarshal(data, result)
 
-	return err
+	return data, err
 }
 
 func (this *Client) DoRequest(method, url string, param Param, result interface{}) (err error) {
@@ -338,7 +339,7 @@ func GetNonceStr() (nonceStr string) {
 }
 
 func pkcs12ToPem(p12 []byte, password string) (cert tls.Certificate, err error) {
-	blocks, err := pkcs12.ToPEM([]byte(p12), password)
+	blocks, err := pkcs12.ToPEM(p12, password)
 
 	if err != nil {
 		return cert, err

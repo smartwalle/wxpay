@@ -5,8 +5,7 @@ import (
 	"net/url"
 )
 
-////////////////////////////////////////////////////////////////////////////////
-// https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_4&index=6
+// RefundParam https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_4&index=6
 type RefundParam struct {
 	NotifyURL     string // 否 异步接收微信支付退款结果通知的回调地址，通知URL必须为外网可访问的url，不允许带参数, 如果参数中传了notify_url，则商户平台上配置的回调地址将不会生效。
 	SignType      string // 否 签名类型，默认为MD5，支持HMAC-SHA256和MD5。
@@ -72,4 +71,66 @@ type RefundRsp struct {
 	CashRefundFee       int    `xml:"cash_refund_fee"`
 	CouponRefundFee     int    `xml:"coupon_refund_fee"`
 	CouponRefundCount   int    `xml:"coupon_refund_count"`
+}
+
+// RefundQueryParam https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_5&index=7
+type RefundQueryParam struct {
+	TransactionId string
+	OutTradeNo    string
+	OutRefundNo   string
+	RefundId      string
+	Offset        int
+}
+
+func (this RefundQueryParam) Params() url.Values {
+	var m = make(url.Values)
+	if this.TransactionId != "" {
+		m.Set("transaction_id", this.TransactionId)
+	}
+	if this.OutTradeNo != "" {
+		m.Set("out_trade_no", this.OutTradeNo)
+	}
+	if this.OutRefundNo != "" {
+		m.Set("out_refund_no", this.OutRefundNo)
+	}
+	if this.RefundId != "" {
+		m.Set("refund_id", this.RefundId)
+	}
+	m.Set("offset", fmt.Sprintf("%d", this.Offset))
+
+	return m
+}
+
+type RefundQueryRsp struct {
+	ReturnCode         string        `xml:"return_code"`
+	ReturnMsg          string        `xml:"return_msg"`
+	ResultCode         string        `xml:"result_code"`
+	ErrCode            string        `xml:"err_code"`
+	ErrCodeDes         string        `xml:"err_code_des"`
+	AppId              string        `xml:"appid"`
+	MCHId              string        `xml:"mch_id"`
+	NonceStr           string        `xml:"nonce_str"`
+	Sign               string        `xml:"sign"`
+	TransactionId      string        `xml:"transaction_id"`
+	OutTradeNo         string        `xml:"out_trade_no"`
+	TotalRefundCount   int           `xml:"total_refund_count"`
+	TotalFee           int           `xml:"total_fee"`
+	FeeType            string        `xml:"fee_type"`
+	CashFee            int           `xml:"cash_fee"`
+	CashFeeType        string        `xml:"cash_fee_type"`
+	SettlementTotalFee int           `xml:"settlement_total_fee"`
+	RefundCount        int           `xml:"refund_count"`
+	RefundFee          int           `xml:"refund_fee"`
+	RefundInfos        []*RefundInfo `xml:"-"`
+}
+
+type RefundInfo struct {
+	OutRefundNo       string
+	RefundAccount     string
+	RefundChannel     string
+	RefundFee         int
+	RefundId          string
+	RefundRecvAccount string
+	RefundStatus      string
+	RefundSuccessTime string
 }

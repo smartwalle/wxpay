@@ -1,6 +1,6 @@
 package wxpay
 
-// https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&index=3
+// TradeNotification https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_7&index=3
 type TradeNotification struct {
 	ReturnCode string `xml:"return_code"`
 	ReturnMsg  string `xml:"return_msg"`

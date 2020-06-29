@@ -23,8 +23,7 @@ const (
 	TradeStatePayError   = "PAYERROR"   //支付失败(其他原因，如银行返回失败)
 )
 
-////////////////////////////////////////////////////////////////////////////////
-// https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
+// UnifiedOrderParam https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_1
 type UnifiedOrderParam struct {
 	NotifyURL      string // 是 异步接收微信支付结果通知的回调地址，通知url必须为外网可访问的url，不能携带参数。
 	Body           string // 是 商品简单描述，该字段请按照规范传递，具体请见参数规定
@@ -111,9 +110,12 @@ type UnifiedOrderRsp struct {
 	MWebURL    string `xml:"mweb_url"`
 }
 
-// 客户端唤起支付所需要的信息：App 支付、微信内H5调起支付(公众号支付)、小程序支付
+// PayInfo 客户端唤起支付所需要的信息：App 支付、微信内H5调起支付(公众号支付)、小程序支付
+//
 // App 支付 - https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_12&index=2
+//
 // 微信内H5调起支付 - https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=7_7&index=6
+//
 // 小程序调起支付API - https://pay.weixin.qq.com/wiki/doc/api/wxa/wxa_api.php?chapter=7_7&index=5
 type PayInfo struct {
 	AppId     string           `json:"app_id"`
@@ -139,8 +141,7 @@ type NativePayInfo struct {
 	RawRsp  *UnifiedOrderRsp `json:"-"`
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
+// OrderQueryParam https://pay.weixin.qq.com/wiki/doc/api/app/app.php?chapter=9_2&index=4
 type OrderQueryParam struct {
 	TransactionId string
 	OutTradeNo    string
@@ -184,8 +185,7 @@ type OrderQueryRsp struct {
 	TradeStateDesc     string `xml:"trade_state_desc"`
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_3
+// CloseOrderParam https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_3
 type CloseOrderParam struct {
 	OutTradeNo string // 是 商户系统内部订单号，要求32个字符内，只能是数字、大小写字母_-|*@ ，且在同一个商户号下唯一。
 }
@@ -209,8 +209,7 @@ type CloseOrderRsp struct {
 	ErrCodeDes string `xml:"err_code_des"`
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
+// DownloadBillParam https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_6
 type DownloadBillParam struct {
 	BillDate string `xml:"bill_date"` // 是 下载对账单的日期，格式：20140603
 	BillType string `xml:"bill_type"` // 是 ALL，返回当日所有订单信息，默认值；SUCCESS，返回当日成功支付的订单；REFUND，返回当日退款订单；RECHARGE_REFUND，返回当日充值退款订单
