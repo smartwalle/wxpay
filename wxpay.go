@@ -300,7 +300,7 @@ func VerifyResponseData(data []byte, key string) (ok bool, err error) {
 func VerifyResponseValues(param url.Values, key string) (bool, error) {
 	// 处理错误信息
 	var code = param.Get("return_code")
-	if code == ReturnCodeFail {
+	if code != ReturnCodeSuccess {
 		var msg = param.Get("return_msg")
 		if msg == "" {
 			msg = param.Get("retmsg")
@@ -309,7 +309,7 @@ func VerifyResponseValues(param url.Values, key string) (bool, error) {
 	}
 
 	code = param.Get("result_code")
-	if code == ReturnCodeFail {
+	if code != ReturnCodeSuccess {
 		var msg = param.Get("err_code_des")
 		return false, errors.New(msg)
 	}
